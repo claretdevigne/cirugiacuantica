@@ -1,30 +1,34 @@
 'use client'
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/lib/auth";
 
 
 const SignIn: React.FC = () => {
 
+  const [clean, setClean] = useState(true)
   const router = useRouter()
 
   const handleSubmit = (e: any) => {
     e.preventDefault()
-    const fakeUser = "ernestoalcudia@cirugiascuanticas.com"
-    const fakePassword = "123456"
     const user = e.target.email.value
     const pass = e.target.password.value
-  
-    if (fakeUser === user && fakePassword === pass) {
-      localStorage.setItem("authToken", "true")
-      router.push("/")
-    }
-    
+    useAuth(user, pass)
+     .then(res => {
+      if(res.status === 200) {
+        localStorage.setItem("authToken", "true")
+        router.push("/")
+        setClean(true)
+      } else if (res.status === 401) {
+        setClean(false)
+      }
+     })
   }
 
   return (
-    <div className="flex justify-center items-center h-screen w-screen">
+    <main className="flex justify-center items-center h-screen w-screen">
       <div className="rounded-sm border w-10/12 border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="flex flex-wrap items-center">
           <div className="hidden w-full xl:block xl:w-1/2">
@@ -114,6 +118,7 @@ const SignIn: React.FC = () => {
                       </svg>
                     </span>
                   </div>
+                  <p className={`${!clean ? "" : "hidden"} text-danger pt-3`}>Usuario y/o contraseña invalida. Por favor intente de nuevo</p>
                 </div>
 
                 <div className="mb-5 font-bold text-xl">
@@ -164,7 +169,7 @@ const SignIn: React.FC = () => {
                 <div className="mt-6 text-center">
                   <p>
                     ¿Aún no tienes cuenta?{" "}
-                    <Link href="/auth/signup" className="text-yellow-500">
+                    <Link href="/auth/signup" className="text-yellow-600">
                       Registrate
                     </Link>
                   </p>
@@ -174,7 +179,7 @@ const SignIn: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 

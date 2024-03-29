@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Product } from "@/types/product";
-import { STUDENTS } from "@/types/students";
+import { STUDENTS } from "@/types/user";
 import { useQuery } from "@tanstack/react-query";
 
 type P = {

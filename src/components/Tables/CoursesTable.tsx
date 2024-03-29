@@ -36,7 +36,7 @@ const CoursesTable = () => {
 
         {courses.map((course: COURSE, key: number) => (
           
-          <Link href={`/courses/${course._id}`}>
+          <Link href={`/courses/${course._id}?name=${course.name}`}>
             <div
             className={`grid grid-cols-3 sm:grid-cols-5 ${
               key === courses.length - 1
