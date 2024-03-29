@@ -10,12 +10,17 @@ const handleFetch = async (id: string) => {
     .then(res => res)
 }
 
+const handleCourses = async (id: string) => {
+  return await fetch(`http://127.0.0.1:5000/api/courses/`)
+    .then(res => res.json())
+    .then(res => res.filter((course: any) => course._id === id))
+}
+
 export default function Home(props: ID_PROP) {
 
   const id = props.params.id
   const { isLoading, error, data = []} = useQuery({queryKey: ["coursesByID"], queryFn: () => handleFetch(id)})
-  console.log(data);
-  
+  const { isLoading: loading, error: err, data: courses} = useQuery({queryKey: ["courses"], queryFn: () => handleCourses(id)})  
 
   return (
       <DefaultLayout>
@@ -23,6 +28,9 @@ export default function Home(props: ID_PROP) {
           !isLoading 
             ?
           <>
+            {courses.map((course: any) => (
+              <div className="bg-white text-zinc-500 py-4 px-6 text-2xl mb-4 border border-zinc-200 shadow-4 shadow-zinc-200">{ course.name }</div>
+            ))}
             <CoursesTableByID id={id} name="current" data={data.currentStudents}/>
             <CoursesTableByID id={id} name="old" data={data.oldStudents}/>
           </>
