@@ -1,13 +1,20 @@
+import { getAllCourses } from "@/app/lib/dbActions";
 import { COURSE } from "@/types/courses";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
 
 
-const fetchCourses = () => {
-  return fetch("http://127.0.0.1:5000/api/courses")
-    .then(async res => res.json())
-    .then(async res => res)
+const fetchCourses = async () => {
+  const token = localStorage.getItem("authToken")
+  if (token) {
+    return await getAllCourses(token)
+      .then(res => console.log(res.courses)
+      )
+  }
+  // return fetch("http://127.0.0.1:5000/api/courses")
+  //   .then(async res => res.json())
+  //   .then(async res => res)
 }
 
 const CoursesTable = () => {

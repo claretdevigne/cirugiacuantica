@@ -1,5 +1,4 @@
 'use server'
-import { randomUUID } from "crypto"
 import { createNewUser } from "./dbActions"
 const bcrypt = require("bcrypt")
 
@@ -19,7 +18,6 @@ export const useSignup = async (name: string, email: string, password: string, r
   const cleanEmail = email.toLowerCase().trim()
 
   const newUser = {
-    "_id": randomUUID(),
     "name": cleanName,
     "email": cleanEmail,
     "password": await hashPassword(password),

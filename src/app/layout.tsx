@@ -26,6 +26,8 @@ export default function RootLayout({
         .then(res => {
           if (res?.status !== 200) {
             route.push("/auth/signin")
+            setLoading(false)
+          } else {
           }
         }) 
     }
@@ -38,6 +40,8 @@ export default function RootLayout({
   useEffect(() => {
     authenticate()
   }, [])
+
+  // TODO: CORREGIR CARGA DE PÄGINA
 
   return (
     <html lang="en">
