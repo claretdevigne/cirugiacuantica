@@ -12,10 +12,17 @@ const hashPassword = async (password: string) => {
 
 export const useSignup = async (name: string, email: string, password: string, repassword: string) => {
 
+  const cleanName = name.split(" ")
+    .map(word => word.charAt(0).toLocaleUpperCase() + word.slice(1).toLowerCase())
+    .join(" ")
+    .trim()
+
+  const cleanEmail = email.toLowerCase().trim()
+
   const newUser = {
     "_id": randomUUID(),
-    "name": name,
-    "email": email,
+    "name": cleanName,
+    "email": cleanEmail,
     "password": await hashPassword(password),
     "admin": false,
     "current_courses": [],

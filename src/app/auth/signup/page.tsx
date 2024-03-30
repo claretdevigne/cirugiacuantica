@@ -5,20 +5,27 @@ import Image from "next/image";
 import { useSignup } from "@/app/lib/singup";
 
 
-const handleSubmit = (e: any, fn: Function) => {
+const handleSubmit = (e: any, setStatus: Function, setValidate: Function) => {
   e.preventDefault()
   const name = e.target.name.value
   const email = e.target.email.value
   const password = e.target.password.value
   const repassword = e.target.repassword.value
 
+  if (!name.length || email.length || password.length || repassword.length ) {
+    setValidate(false)
+    return
+  }
+
+  setValidate(true)
   useSignup(name, email, password, repassword)
-    .then(res => fn(res))
+    .then(res => setStatus(res))
 }
 
 const SignUp: React.FC = () => {
 
   const [status, setStatus] = useState()
+  const [validate, setValidate] = useState(true)
 
   return (
     <main className="flex justify-center items-center w-screen">
@@ -43,7 +50,7 @@ const SignUp: React.FC = () => {
                 Regístrate
               </h2>
 
-              <form onSubmit={(e) => handleSubmit(e, setStatus)}>
+              <form onSubmit={(e) => handleSubmit(e, setStatus, setValidate)}>
                 <div className="mb-4">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
                     Nombre
@@ -54,6 +61,7 @@ const SignUp: React.FC = () => {
                       name="name"
                       placeholder="Ingresa tu nombre"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      required
                     />
 
                     <span className="absolute right-4 top-4">
@@ -90,6 +98,7 @@ const SignUp: React.FC = () => {
                       name="email"
                       placeholder="Ingresa tu email"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      required
                     />
 
                     <span className="absolute right-4 top-4">
@@ -122,6 +131,7 @@ const SignUp: React.FC = () => {
                       name="password"
                       placeholder="Ingresa tu contraseña"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      required
                     />
 
                     <span className="absolute right-4 top-4">
@@ -158,6 +168,7 @@ const SignUp: React.FC = () => {
                       name="repassword"
                       placeholder="Confirma tu contraseña"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      required
                     />
 
                     <span className="absolute right-4 top-4">
@@ -182,15 +193,17 @@ const SignUp: React.FC = () => {
                       </svg>
                     </span>
                     {
-                      status === 201
-                        ? <p className="text-success text-center mt-2">El usuario ha sido creado satisfactoriamente</p>
-                          : status === 409 ?
-                          <div className="text-warning text-center mt-2">
-                            <p>El usuario ya existe en la base de datos.</p>
-                            <p>Por favor inicie sesión</p>
-                          </div>
-                            :
-                            <p className="hidden"></p>
+                      validate === false
+                       ?  <p className="text-danger text-center mt-2">Por favor complete todos los campos</p>
+                        : status === 201
+                          ? <p className="text-success text-center mt-2">El usuario ha sido creado satisfactoriamente</p>
+                            : status === 409 ?
+                            <div className="text-warning text-center mt-2">
+                              <p>El usuario ya existe en la base de datos.</p>
+                              <p>Por favor inicie sesión</p>
+                            </div>
+                              :
+                              <p className="hidden"></p>
                     }
                   </div>
                 </div>
