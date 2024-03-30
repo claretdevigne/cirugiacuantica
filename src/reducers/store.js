@@ -7,5 +7,5 @@ export const useStore = create((set) => ({
   setCurrentStudents: (payload) => (state) => set({ currentStudents: payload}) ,
   setOldStudents: (payload) => (state) => set({ oldStudents: payload}),
   authenticate: () => set({auth: true}),
-  unauthenticate: () => set({auth: true})
+  unauthenticate: () => set({auth: false})
 }))

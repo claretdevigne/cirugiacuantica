@@ -6,6 +6,7 @@ import Loader from "@/components/common/Loader";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { useStore } from "@/reducers/store";
 import { useRouter } from "next/navigation";
+import { validateToken } from "./lib/dbActions";
 
 export default function RootLayout({
   children,
@@ -21,9 +22,12 @@ export default function RootLayout({
   const authenticate = () => {
     const authToken = localStorage.getItem("authToken")
     if (authToken) {
-      setAuth()
-    } else {
-      route.push("/auth/signin")
+      validateToken(authToken)
+        .then(res => {
+          if (res?.status !== 200) {
+            route.push("/auth/signin")
+          }
+        }) 
     }
   }
 

@@ -19,16 +19,15 @@ const SignIn: React.FC = () => {
 
     if (user.length && pass.length) {
       useAuth(user, pass)
-      .then(res => {
-        if (res) {
-          localStorage.setItem("authToken", "true")
-          setClean(true)
+       .then((res: any) => {
+        if (res.status === 200) {
+          localStorage.setItem("authToken", res.token)
           router.push("/")
         } else {
           setClean(false)
         }
-      })
-    }
+      })     
+    } 
   }
 
   return (
