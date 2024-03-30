@@ -1,5 +1,6 @@
 'use server'
 
+const bcrypt = require("bcrypt")
 import { USER } from "@/types/user"
 
 const { MongoClient } = require("mongodb")
@@ -42,6 +43,36 @@ export const createNewUser = async (newUser: USER) => {
         await col.insertMany([newUser])
         client.close()
         return { status: 201 }
+        
+    } catch (err) {
+        console.log("Fallo al conectar");    
+    }
+}
+
+export const validateCredentials = async (email: string, password: string) => {
+
+    try {
+        await client.connect()
+        const db = client.db(dbName)
+        const col = db.collection(usersCollectionName)
+
+        const user = await col.find({ email: email }).toArray()
+        client.close()
+
+        if (!user.length) {
+            
+            return {
+                status: 404
+            }
+        }
+        
+        const result = await bcrypt.compare(password, user[0].password)
+        
+        if (result) {
+            return { status: 200 }
+        } 
+        
+        return { status: 401 }
         
     } catch (err) {
         console.log("Fallo al conectar");    

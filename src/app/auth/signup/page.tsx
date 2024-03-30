@@ -12,7 +12,7 @@ const handleSubmit = (e: any, setStatus: Function, setValidate: Function) => {
   const password = e.target.password.value
   const repassword = e.target.repassword.value
 
-  if (!name.length || email.length || password.length || repassword.length ) {
+  if (!name.length || !email.length || !password.length || !repassword.length ) {
     setValidate(false)
     return
   }

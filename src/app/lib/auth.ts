@@ -1,16 +1,15 @@
-'use server'
+'use client'
+
+import { validateCredentials } from "./dbActions"
 
 export const useAuth = async (user: string, pass: string) => {
 
-  const fakeUser = "ernestoalcudia@cirugiascuanticas.com"
-  const fakePassword = "123456"
-
-  const status = (status: number) => { status: status }
+  const authenticate = await validateCredentials(user, pass)
   
-  if (fakeUser === user && fakePassword === pass) {
-    // localStorage.setItem("authToken", "true")
-    return { status: 200 }
-  } else {
-    return { status: 401 }
+  if (authenticate?.status === 200) {
+    return true
   }
+
+  return false
+  
 }

@@ -4,10 +4,9 @@ import { createNewUser } from "./dbActions"
 const bcrypt = require("bcrypt")
 
 const hashPassword = async (password: string) => {
-  const saltRounds = 12
-  const hashedPassword = await bcrypt.hash(password, saltRounds)
+  const saltRounds = bcrypt.genSaltSync(12)
+  const hashedPassword = bcrypt.hash(password, saltRounds)
   return hashedPassword
-  
 }
 
 export const useSignup = async (name: string, email: string, password: string, repassword: string) => {

@@ -13,18 +13,22 @@ const SignIn: React.FC = () => {
 
   const handleSubmit = (e: any) => {
     e.preventDefault()
+
     const user = e.target.email.value
     const pass = e.target.password.value
-    useAuth(user, pass)
-     .then(res => {
-      if(res.status === 200) {
-        localStorage.setItem("authToken", "true")
-        router.push("/")
-        setClean(true)
-      } else if (res.status === 401) {
-        setClean(false)
-      }
-     })
+
+    if (user.length && pass.length) {
+      useAuth(user, pass)
+      .then(res => {
+        if (res) {
+          localStorage.setItem("authToken", "true")
+          setClean(true)
+          router.push("/")
+        } else {
+          setClean(false)
+        }
+      })
+    }
   }
 
   return (
@@ -62,6 +66,7 @@ const SignIn: React.FC = () => {
                       name="email"
                       placeholder="Ingresa tu email"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-yellow-500 focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      required
                     />
 
                     <span className="absolute right-4 top-4">
@@ -94,6 +99,7 @@ const SignIn: React.FC = () => {
                       name="password"
                       placeholder="Más de 6 caractéres, 1 letra mayúscula"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-yellow-500 focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      required
                     />
 
                     <span className="absolute right-4 top-4">
