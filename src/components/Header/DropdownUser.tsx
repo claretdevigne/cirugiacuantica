@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { removeSession } from "@/app/lib/dbActions";
 
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -12,8 +13,12 @@ const DropdownUser = () => {
   const router = useRouter()
 
   const handleSignOut = () => {
-    localStorage.removeItem("authToken")
-    router.push("/auth/signin")
+    const token = localStorage.getItem("authToken")
+    if (token) {
+      removeSession(token)
+      localStorage.removeItem("authToken")
+      router.push("/auth/signin")
+    }
   }
 
   // close on click outside

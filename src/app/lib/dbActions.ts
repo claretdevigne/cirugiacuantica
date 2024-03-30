@@ -55,7 +55,7 @@ const createSession = async (email: string) => {
 
 }
 
-const removeSession = async (token: string) => {
+export const removeSession = async (token: string) => {
 
     try {
         await client.connect()
