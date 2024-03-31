@@ -6,12 +6,11 @@ import { Modal } from "@/components/common/Modal";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
-// OBTENIENDO CURSOS
-const fetchAllCourses = async (setState: Function) => {
+const fetchAllCourses = async () => {
   const token = localStorage.getItem("authToken")
   if (token) {
     return await getAllCourses(token)
-      .then(res => res.status === 200 ? res.courses : [])
+      .then(res => res.courses)
   }
 }
 
@@ -19,9 +18,10 @@ export default function Home() {
   const [activeModal, setActiveModal] = useState(false)
   const [id, setId] = useState()
   const [modalDefinition, setModalDefinition] = useState("edit")
-  const { isLoading, error, data } = useQuery({queryKey: ["courses"], queryFn: () => fetchAllCourses(setCourses)})
+  const { isLoading, error, data } = useQuery({queryKey: ["courses"], queryFn: fetchAllCourses})
 
-  //TODO: GET COURSES
+  // ----- CONFIGURAR LA CARGA DE LOS CURSOS
+
   //TODO: CUANDO SE ACTIVA EL MODAL ENVIA EL CURSO EN BASE AL ID
   //TODO: DEFINIR PROP PARA CONTENIDO DEL MODAL (EDITAR, CREAR, ELIMINAR)
 
@@ -46,8 +46,7 @@ export default function Home() {
     <>
       <DefaultLayout>
         <Modal course={course} deactivate={setActiveModal} active={activeModal} definition={modalDefinition} />
-        <TableManageCourses activator={activator} />
-        <button onClick={() => console.log("data: ", data)}>CLICK</button>
+        <TableManageCourses coursesList={ data } activator={activator} />
       </DefaultLayout>
     </>
   );
