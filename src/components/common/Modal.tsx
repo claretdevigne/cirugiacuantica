@@ -1,13 +1,16 @@
 import { AddCourse } from "@/app/admin/manage/courses/addCourse"
 import { DeleteCourse } from "@/app/admin/manage/courses/deleteCourse"
 import { EditCourse } from "@/app/admin/manage/courses/editCourse"
+import { useManageCoursesStore } from "@/reducers/store"
 
 export const Modal = ( props: any )  => {
+
+    const { modalIsActive, modalToggle, modalDefinition } = useManageCoursesStore()
 
     return (
         <>
             {
-                props.active
+                modalIsActive
                 
                 ?
 
@@ -28,7 +31,7 @@ export const Modal = ( props: any )  => {
                                                         : ""
                                     }
                                 </p>
-                                <button onClick={() => props.deactivate(false) } id="closeModalBtn" className="modal-close cursor-pointer z-50">
+                                <button onClick={modalToggle} id="closeModalBtn" className="modal-close cursor-pointer z-50">
                                 {
                                     //TODO: CORREGIR SVG NO SE VE.
                                 }
@@ -39,11 +42,11 @@ export const Modal = ( props: any )  => {
                             </div>
                             
                             {
-                                props.definition === "add"
+                                modalDefinition === "add"
                                     ? <AddCourse />
-                                      : props.definition === "edit"
-                                        ? <EditCourse courses={ props.courses } />
-                                            : props.definition === "delete"
+                                      : modalDefinition === "edit"
+                                        ? <EditCourse />
+                                            : modalDefinition === "delete"
                                                 ? <DeleteCourse />
                                                     : ""
                             }

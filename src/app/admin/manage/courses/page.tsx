@@ -3,6 +3,7 @@ import { getAllCourses } from "@/app/lib/dbActions";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import TableManageCourses from "@/components/Tables/TableManageCourses";
 import { Modal } from "@/components/common/Modal";
+import { useManageCoursesStore } from "@/reducers/store";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
@@ -15,7 +16,6 @@ const fetchAllCourses = async () => {
 }
 
 export default function Home() {
-  const [activeModal, setActiveModal] = useState(false)
   const [id, setId] = useState()
   const [modalDefinition, setModalDefinition] = useState("edit")
   const { isLoading, error, data } = useQuery({queryKey: ["courses"], queryFn: fetchAllCourses})
@@ -39,13 +39,15 @@ export default function Home() {
     }
 
     setModalDefinition(typeOfCourse)
-    setActiveModal(true)
   }
+
+  const store = useManageCoursesStore()
+
 
   return (
     <>
       <DefaultLayout>
-        <Modal course={course} deactivate={setActiveModal} active={activeModal} definition={modalDefinition} />
+        <Modal course={course} definition={modalDefinition} />
         <TableManageCourses coursesList={ data } activator={activator} />
       </DefaultLayout>
     </>

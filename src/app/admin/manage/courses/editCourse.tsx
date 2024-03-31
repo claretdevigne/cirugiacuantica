@@ -1,10 +1,11 @@
 import SelectGroupTwo from "@/components/SelectGroup/SelectGroupTwo"
 import SwitcherFour from "@/components/Switchers/SwitcherFour"
+import { useManageCoursesStore } from "@/reducers/store"
 import { useState } from "react"
 
-export const EditCourse = ( props: any ) => {
+export const EditCourse = () => {
 
-    const course = props.course
+    const course = useManageCoursesStore().selectedCourse
     const [courseName, setCourseName] = useState(course.name)
     const [courseUrl, setcourseUrl] = useState(course.url)
 
@@ -40,7 +41,7 @@ export const EditCourse = ( props: any ) => {
             </div>
 
             <div className="mt-5">
-                <SelectGroupTwo name="REQUERIMIENTOS" cursos={ props.courses } />
+                <SelectGroupTwo name="REQUERIMIENTOS" cursos={ course } />
             </div>
 
             <div className="flex justify-center my-3">

@@ -1,3 +1,5 @@
+import { useManageCoursesStore } from "@/reducers/store";
+
 type coursesDataType = {
   _id: number,
   url: string,
@@ -6,47 +8,54 @@ type coursesDataType = {
   requirements: string[]
 }
 
-// const coursesData: coursesDataType[] = [
-//   {
-//     _id: 1,
-//     url: "google.com",
-//     name: "CURSO 1",
-//     status: "Activo",
-//     requirements: []
-//   },
-//   {
-//     _id: 2,
-//     url: "google.com",
-//     name: "CURSO 2",
-//     status: "Inactivo",
-//     requirements: []
-//   },
-//   {
-//     _id: 3,
-//     url: "google.com",
-//     name: "CURSO 3",
-//     status: "Activo",
-//     requirements: []
-//   },
-//   {
-//     _id: 4,
-//     url: "google.com",
-//     name: "CURSO 4",
-//     status: "Inactivo",
-//     requirements: []
-//   },
-//   {
-//     _id: 5,
-//     url: "google.com",
-//     name: "CURSO 5",
-//     status: "Activo",
-//     requirements: []
-//   },
-// ];
+const coursesData: coursesDataType[] = [
+  {
+    _id: 1,
+    url: "google.com",
+    name: "CURSO 1",
+    status: "Activo",
+    requirements: []
+  },
+  {
+    _id: 2,
+    url: "google.com",
+    name: "CURSO 2",
+    status: "Inactivo",
+    requirements: []
+  },
+  {
+    _id: 3,
+    url: "google.com",
+    name: "CURSO 3",
+    status: "Activo",
+    requirements: []
+  },
+  {
+    _id: 4,
+    url: "google.com",
+    name: "CURSO 4",
+    status: "Inactivo",
+    requirements: []
+  },
+  {
+    _id: 5,
+    url: "google.com",
+    name: "CURSO 5",
+    status: "Activo",
+    requirements: []
+  },
+];
 
 const TableManageCourses = (props: any) => {
 
-  const coursesData: coursesDataType[] = JSON.parse(props.coursesList);
+  // const coursesData: coursesDataType[] = JSON.parse(props.coursesList);
+  const { modalToggle, setSelectedId, setModalDefinition, setSelectedCourse } = useManageCoursesStore()
+
+  const handleModal = (course: object, definition: string) => {
+    setModalDefinition(definition)
+    setSelectedCourse(course)
+    modalToggle()
+  }
 
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pb-2.5 pt-6 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
@@ -103,7 +112,7 @@ const TableManageCourses = (props: any) => {
                     </td>
                     <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                       <div className="flex items-center space-x-3.5">
-                      <button onClick={ () => props.activator(courseItem._id, "edit") } className="hover:text-primary">
+                      <button onClick={ () => handleModal(courseItem, "edit") } className="hover:text-primary">
                           <svg 
                             className="w-6 h-6 text-gray-800 dark:text-white" 
                             aria-hidden="true" 
@@ -122,7 +131,7 @@ const TableManageCourses = (props: any) => {
                             />
                           </svg>
                         </button>
-                        <button onClick={ () => props.activator(courseItem._id, "delete")} className="hover:text-primary">
+                        <button onClick={ () => handleModal(courseItem, "delete") } className="hover:text-primary">
                           <svg
                             className="fill-current"
                             width="18"
