@@ -1,19 +1,11 @@
-import Image from "next/image";
-import { Product } from "@/types/product";
-import { STUDENTS } from "@/types/user";
-import { useQuery } from "@tanstack/react-query";
+// import { STUDENTS } from "@/types/user";
+
+import CoursesLoader from "../common/CoursesLoader";
 
 type P = {
   name: string,
   id: string,
   data: any
-}
-
-const handleCourses = (id: string) => {
-  return fetch("https://172.0.0.1:5000/api/courses")
-    .then(res => res.json())
-    .then(res => console.log(res)
-    )
 }
 
 const CoursesTableByID = (props: P) => {
@@ -48,7 +40,7 @@ const CoursesTableByID = (props: P) => {
               <th className="min-w-[120px] px-4 py-4 font-medium text-black dark:text-white">
                 Status
               </th>
-              <th className={` ${name !== "current" ? "hidden" : ""} px-4 py-4 font-medium text-black dark:text-white`}>
+              <th className={"px-4 py-4 font-medium text-black dark:text-white"}>
                 Acciones
               </th>
             </tr>
@@ -58,7 +50,7 @@ const CoursesTableByID = (props: P) => {
             {
 
               data.length
-                ? data.map((student: STUDENTS, key: number) => (
+                ? data.map((student: any, key: number) => (
                   <tr key={key}>
                     <td className="border-b border-[#eee] px-4 py-5 pl-9 dark:border-strokedark xl:pl-11">
                       <h5 className="font-medium text-black dark:text-white">
@@ -87,8 +79,12 @@ const CoursesTableByID = (props: P) => {
                     </td>
                     <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                       <div className="flex items-center space-x-3.5">
-                        <button className={`${name !== "current" ? "hidden" : ""} hover:text-primary bg-success px-5 py-2 text-white rounded-md`}>
-                          Confirmar
+                        <button className={`${ name === "current" ? "bg-success " : "bg-zinc-500"} hover:opacity-80 px-5 py-2 text-white rounded-md`}>
+                          {
+                            name === "current"
+                              ? "Confirmar"
+                               : "Modificar"
+                          }
                         </button>
                       </div>
                     </td>

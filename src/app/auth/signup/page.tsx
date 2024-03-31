@@ -1,11 +1,12 @@
 'use client'
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useSignup } from "@/app/lib/singup";
 
-
-const handleSubmit = (e: any, setStatus: Function, setValidate: Function) => {
+const handleSignup = (e: any, setStatus: Function, setValidate: Function) => {
+  setValidate("")
+  setStatus()
   e.preventDefault()
   const name = e.target.name.value
   const email = e.target.email.value
@@ -13,11 +14,21 @@ const handleSubmit = (e: any, setStatus: Function, setValidate: Function) => {
   const repassword = e.target.repassword.value
 
   if (!name.length || !email.length || !password.length || !repassword.length ) {
-    setValidate(false)
+    setValidate("missingField")
     return
   }
 
-  setValidate(true)
+  if (password.length < 8) {
+    setValidate("tooShort")
+    return
+  }
+
+  if (password !== repassword) {
+    setValidate("unmatchPasswords")
+    return
+  }
+
+  setValidate("")  
   useSignup(name, email, password, repassword)
     .then(res => setStatus(res))
 }
@@ -25,7 +36,7 @@ const handleSubmit = (e: any, setStatus: Function, setValidate: Function) => {
 const SignUp: React.FC = () => {
 
   const [status, setStatus] = useState()
-  const [validate, setValidate] = useState(true)
+  const [validatedData, setValidatedData] = useState()
 
   return (
     <main className="flex justify-center items-center w-screen">
@@ -50,7 +61,7 @@ const SignUp: React.FC = () => {
                 Regístrate
               </h2>
 
-              <form onSubmit={(e) => handleSubmit(e, setStatus, setValidate)}>
+              <form onSubmit={(e) => handleSignup(e, setStatus, setValidatedData)}>
                 <div className="mb-4">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
                     Nombre
@@ -129,7 +140,7 @@ const SignUp: React.FC = () => {
                     <input
                       type="password"
                       name="password"
-                      placeholder="Ingresa tu contraseña"
+                      placeholder="Ingresa tu contraseña. Minimo 8 caracteres"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       required
                     />
@@ -193,17 +204,21 @@ const SignUp: React.FC = () => {
                       </svg>
                     </span>
                     {
-                      validate === false
+                      validatedData === "missingField"
                        ?  <p className="text-danger text-center mt-2">Por favor complete todos los campos</p>
-                        : status === 201
-                          ? <p className="text-success text-center mt-2">El usuario ha sido creado satisfactoriamente</p>
-                            : status === 409 ?
-                            <div className="text-warning text-center mt-2">
-                              <p>El usuario ya existe en la base de datos.</p>
-                              <p>Por favor inicie sesión</p>
-                            </div>
-                              :
-                              <p className="hidden"></p>
+                        : validatedData === "tooShort"
+                          ?  <p className="text-danger text-center mt-2">La contraseña debe tener al menos 8 caracteres</p>
+                            : validatedData === "unmatchPasswords"
+                              ? <p className="text-danger text-center mt-2">Las contraseñas no coinciden</p>
+                                : status === 201
+                                  ? <p className="text-success text-center mt-2">El usuario ha sido creado satisfactoriamente</p>
+                                    : status === 409 ?
+                                    <div className="text-warning text-center mt-2">
+                                      <p>El usuario ya existe en la base de datos.</p>
+                                      <p>Por favor inicie sesión</p>
+                                    </div>
+                                  :
+                                  <p className="hidden"></p>
                     }
                   </div>
                 </div>
@@ -217,7 +232,8 @@ const SignUp: React.FC = () => {
                   />
                 </div>
 
-                {/* <button className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50">
+                {/*TODO: Eliminar o implementar
+                 <button className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50">
                   <span>
                     <svg
                       width="20"

@@ -67,7 +67,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     >
       {/* <!-- SIDEBAR HEADER --> */}
       <div className="flex items-center justify-center px-6 py-5.5">
-        <div className="flex justify-center">
+        <div className="flex justify-center h-auto">
           <Image
             width={200}
             height={32}

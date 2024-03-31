@@ -21,15 +21,17 @@ export default function RootLayout({
   
   const authenticate = () => {
     const authToken = localStorage.getItem("authToken")
+
     if (authToken) {
       validateToken(authToken)
         .then(res => {
           if (res?.status !== 200) {
+            console.log(29, res?.status);
             route.push("/auth/signin")
             setLoading(false)
-          } else {
-          }
-        }) 
+          }}) 
+    } else {
+      route.push("/auth/signin")
     }
   }
 

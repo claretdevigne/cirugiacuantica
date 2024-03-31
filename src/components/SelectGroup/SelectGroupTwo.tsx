@@ -1,7 +1,27 @@
 "use client";
 import React, { useState } from "react";
 
-const SelectGroupTwo: React.FC = () => {
+const courses = [
+  {
+    id: 1,
+    name: "Curso 1"
+  },
+
+  {
+    id: 2,
+    name: "Curso 2"
+  },
+
+  {
+    id: 3,
+    name: "Curso 3"
+  },
+]
+
+const SelectGroupTwo: any = (props: {
+  name: string,
+  data: object
+}) => {
   const [selectedOption, setSelectedOption] = useState<string>("");
   const [isOptionSelected, setIsOptionSelected] = useState<boolean>(false);
 
@@ -12,7 +32,9 @@ const SelectGroupTwo: React.FC = () => {
   return (
     <div>
       <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-        Select Country
+        {
+          props.name
+        }
       </label>
 
       <div className="relative z-20 bg-white dark:bg-form-input">
@@ -58,17 +80,20 @@ const SelectGroupTwo: React.FC = () => {
           }`}
         >
           <option value="" disabled className="text-body dark:text-bodydark">
-            Select Country
+            Selecciona
           </option>
-          <option value="USA" className="text-body dark:text-bodydark">
-            USA
-          </option>
-          <option value="UK" className="text-body dark:text-bodydark">
-            UK
-          </option>
-          <option value="Canada" className="text-body dark:text-bodydark">
-            Canada
-          </option>
+
+          {
+
+            courses.map(course => {
+              return (
+                <option value={course.id} className="text-body dark:text-bodydark">
+                  {course.name}
+                </option>
+              )
+            })
+
+          }
         </select>
 
         <span className="absolute right-4 top-1/2 z-10 -translate-y-1/2">

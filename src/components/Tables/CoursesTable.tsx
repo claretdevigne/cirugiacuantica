@@ -3,19 +3,21 @@ import { COURSE } from "@/types/courses";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
+import CoursesLoader from "../common/CoursesLoader";
+import Loader from "../common/Loader";
 
 
 const fetchCourses = async () => {
   const token = localStorage.getItem("authToken")
-  if (token) {
-    return await getAllCourses(token)
-      .then(res => console.log(res.courses)
-      )
-  }
-  // return fetch("http://127.0.0.1:5000/api/courses")
-  //   .then(async res => res.json())
-  //   .then(async res => res)
-}
+
+    if (token) {
+      return await getAllCourses(token)
+      .then(res => {
+        if (typeof res.courses === "string") {
+          return JSON.parse(res.courses)
+        }
+    })
+}}
 
 const CoursesTable = () => {
 
@@ -41,7 +43,18 @@ const CoursesTable = () => {
           </div>
         </div>
 
-        {courses.map((course: COURSE, key: number) => (
+        
+        {
+
+          (isLoading)
+
+          ?
+
+          <CoursesLoader />
+
+          :
+          
+          courses.map((course: COURSE, key: number) => (
           
           <Link href={`/courses/${course._id}?name=${course.name}`}>
             <div
@@ -62,10 +75,6 @@ const CoursesTable = () => {
               </div>
             </div>
           </Link>
-          
-          
-
-
         ))}
       </div>
     </div>
