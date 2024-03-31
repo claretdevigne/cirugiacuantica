@@ -144,6 +144,9 @@ const TableManageCourses = (props: any) => {
             ))}
           </tbody>
         </table>
+        <div className="flex justify-center my-5">
+          <button className="bg-yellow-500 rounded-md text-white py-2 px-5 hover:transition shadow-3 hover:opacity-90">Agregar curso</button>
+        </div>
       </div>
     </div>
   );
