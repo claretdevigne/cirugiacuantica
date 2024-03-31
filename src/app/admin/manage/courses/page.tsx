@@ -23,7 +23,10 @@ export default function Home() {
   }
 
   const activator = (id: any, typeOfCourse: string) => {
-    setId(id)
+    if (typeOfCourse === "edit" || typeOfCourse === "delete") {
+      setId(id)
+    }
+    
     setModalDefinition(typeOfCourse)
     setActiveModal(true)
   }
