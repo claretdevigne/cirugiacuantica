@@ -65,7 +65,7 @@ const TableStudents: React.FC = () => {
       setRequests(counter)
     }
     
-  }, [isLoading])
+  }, [isLoading, data])
 
   return (
     <div className="col-span-12 xl:col-span-7">
