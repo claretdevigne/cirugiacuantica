@@ -49,7 +49,7 @@ export default function RootLayout({
 
   useEffect(() => {
     authenticate()
-  }, [])
+  })
 
   // TODO: CORREGIR CARGA DE PÄGINA
 

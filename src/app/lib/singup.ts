@@ -8,7 +8,7 @@ const hashPassword = async (password: string) => {
   return hashedPassword
 }
 
-export const useSignup = async (name: string, email: string, password: string, repassword: string) => {
+export const signup = async (name: string, email: string, password: string, repassword: string) => {
 
   const cleanName = name.split(" ")
     .map(word => word.charAt(0).toLocaleUpperCase() + word.slice(1).toLowerCase())

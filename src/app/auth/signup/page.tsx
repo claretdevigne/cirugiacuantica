@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useSignup } from "@/app/lib/singup";
+import { signup } from "@/app/lib/singup";
 
 const handleSignup = (e: any, setStatus: Function, setValidate: Function) => {
   setValidate("")
@@ -29,8 +29,8 @@ const handleSignup = (e: any, setStatus: Function, setValidate: Function) => {
   }
 
   setValidate("")  
-  useSignup(name, email, password, repassword)
-    .then(res => setStatus(res))
+  signup(name, email, password, repassword)
+    .then((res: any) => setStatus(res))
 }
 
 const SignUp: React.FC = () => {
