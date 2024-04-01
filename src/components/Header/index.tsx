@@ -36,7 +36,7 @@ const Header = (props: {
         console.log(err)
         console.log("ERROR FETCHING USER DATA. HEADER/INDEX.TSX")
       })
-  }, [fetchingUserData, setUser])
+  })
 
   return (  
     <header className="sticky top-0 z-999 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
