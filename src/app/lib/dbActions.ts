@@ -11,6 +11,7 @@ const MD_URI = "mongodb+srv://claretdevigne:c14r37dv@cluster0.gcoddci.mongodb.ne
 const dbName = "cirugiascuanticas" 
 const usersCollectionName = "users"
 const sessionsCollectionName = "sessions"
+const requestsCollectionName = "requests"
 const coursesCollectionName = "courses"
 const client = new MongoClient(MD_URI)
 
@@ -67,7 +68,7 @@ export const validateCredentials = async (email: string, password: string) => {
         return { status: 401 }
         
     } catch (err) {
-        console.log("Fallo al conectar");    
+        console.log("Fallo al conectar: VALIDATE CREDENTIALS");    
     }
 }
 
@@ -98,7 +99,7 @@ export const validateToken = async (token: string) => {
         return { status: 401 }
         
     } catch (err) {
-        console.log("Fallo al conectar");    
+        console.log("Fallo al conectar: VALIDATE TOKEN");    
     }
 }
 
@@ -147,7 +148,7 @@ const createSession = async (email: string, admin: boolean) => {
         }
         
     } catch (err) {
-        console.log("Fallo al conectar");    
+        console.log("Fallo al conectar: CREATE SESSION");    
     }
 
 }
@@ -161,7 +162,7 @@ export const removeSession = async (token: string) => {
         const sessionRemoved = await connection.deleteOne({ token: token })
         
     } catch (err) {
-        console.log("Fallo al conectar");    
+        console.log("Fallo al conectar: REMOVE SESSION");    
     }
 
 }
@@ -172,16 +173,16 @@ export const removeSession = async (token: string) => {
  */
 
 // GET ALL USERS
-export const getAllUsers = async () => {
+export const getAllUsers = async (token: string) => {
 
     try {
         const connection = await connectDB(dbName, usersCollectionName)
         const results = await connection.find({}).toArray()
-        client.close()
-        return await results
+        const data = JSON.stringify(results)
+        return await data
         
     } catch (err) {
-        console.log("Fallo al conectar");    
+        console.log("Fallo al conectar: GETTING ALL USERS");    
     }
 }
 
@@ -270,7 +271,7 @@ export const getUserData = async (token: string, email: string) => {
         } 
         
     } catch (err) {
-        console.log("Fallo al conectar");    
+        console.log("Fallo al conectar: GETTING USER DATA");    
     }
 }
 
@@ -294,7 +295,7 @@ export const createNewUser = async (newUser: USER) => {
         return { status: 201 }
         
     } catch (err) {
-        console.log("Fallo al conectar");    
+        console.log("Fallo al conectar: CREATE NEW USER");    
     }
 }
 
@@ -422,6 +423,135 @@ export const deleteCourse = async (token: string, id: string) => {
         if (deleted) {
             return {
                 status: 404
+            }
+        }
+
+    return {
+        status: 401
+    }
+}}
+
+// ------------ REQUESTSSSS
+
+export const createRequest = async (token: string, courseId: string, userEmail: string) => {
+
+    const validation = await validateToken(token)
+
+    if (validation?.status === 200) {
+
+        const requestConnection = await connectDB(dbName, requestsCollectionName)
+        const userConnection = await connectDB(dbName, usersCollectionName)
+        const courseConnection = await connectDB(dbName, coursesCollectionName)
+        
+        const objectId = new ObjectId(String(courseId))
+
+        const courseObject = await courseConnection.findOne({ _id: objectId })
+        const courseName = await courseObject.name
+
+        const userObject = await userConnection.findOne({ email: userEmail })
+        const userName = await userObject.name
+        
+        const request = {
+            userName: userName,
+            courseName: courseName,
+            status: false
+        }
+        
+        const requestRespose = await requestConnection.insertMany([request])
+        
+        if (requestRespose) {
+            return {
+                status: 404
+            }
+        }
+
+    return {
+        status: 401
+    }
+}}
+
+export const getRequests = async (token: string) => {
+
+    const validation = await validateToken(token)
+
+    if (validation?.status === 200) {
+
+        const connection = await connectDB(dbName, requestsCollectionName)
+    
+        const requests = await connection.find({}).toArray()
+        const data = JSON.stringify(requests)
+        
+        if (requests) {
+            return {
+                status: 200,
+                data: data
+            }
+        }
+
+    return {
+        status: 401
+    }
+}}
+
+export const updateRequests = async (token: string, request: any) => {
+
+    const validation = await validateToken(token)
+
+    if (validation?.status === 200) {
+
+        const connection = await connectDB(dbName, requestsCollectionName)
+        const usersConnection = await connectDB(dbName, usersCollectionName)
+        const courseConnection = await connectDB(dbName, coursesCollectionName)
+
+        const objectID = new ObjectId(String(request._id))
+    
+        const requests = await connection.deleteOne({ _id: objectID })
+        
+        //TODO: Agregar el email. Peligro de repetir nombres
+        const user = await usersConnection.findOne({ name: request.userName })
+
+        const course = await courseConnection.findOne({ name: request.courseName })
+
+        const current_courses = [
+            ...user.current_courses,
+            course._id
+        ]
+
+        const userUpdated = await usersConnection.updateOne({ name: request.userName }, {
+            $set: {
+                current_courses: current_courses
+            }
+        } )
+        
+        if (requests) {
+            return {
+                status: 200
+            }
+        }
+
+    return {
+        status: 401
+    }
+}}
+
+export const updateUser = async (token: string, user: any) => {
+
+    const validation = await validateToken(token)
+
+    if (validation?.status === 200) {
+
+        const connection = await connectDB(dbName, usersCollectionName)
+        
+        const id = new ObjectId(String(user._id))
+
+        const added = await connection.updateOne({ _id: id }, { $set: {
+            courses_completed: user.current_courses,
+            current_courses: []
+        } })        
+
+        if (added) {
+            return {
+                status: 201
             }
         }
 

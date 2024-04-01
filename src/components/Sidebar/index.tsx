@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import SidebarLinkGroup from "./SidebarLinkGroup";
 import { userStore } from "@/reducers/store";
+import { useQuery } from "@tanstack/react-query";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -14,6 +15,8 @@ interface SidebarProps {
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
+  const [ admin, setAdmin ] = useState(false)
+  
   const { user } = userStore()
 
   const pathname = usePathname();
@@ -26,6 +29,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const [sidebarExpanded, setSidebarExpanded] = useState(
     storedSidebarExpanded === null ? false : storedSidebarExpanded === "true",
   );
+
+  useEffect(() => {
+    if (user) {
+      setAdmin(user.admin)
+    }
+  }, [user])
 
   // close on click outside
   useEffect(() => {
@@ -189,7 +198,38 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                         }`}
                       >
                         <ul className="mb-5.5 mt-4 flex flex-col gap-2.5 pl-6">
-                          <li>
+                          
+                          {
+
+                            admin
+
+                            ?
+                            <>
+                            <li>
+                              <Link
+                                href="/admin/dashboard"
+                                className={`group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ${
+                                  pathname === "/" && "text-white"
+                                }`}
+                              >
+                                Peticiones
+                              </Link>
+                            </li>
+                            <li>
+                              <Link
+                                href="/admin/students"
+                                className={`group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ${
+                                  pathname === "/" && "text-white"
+                                }`}
+                              >
+                                Estudiantes Activos
+                              </Link>
+                            </li>
+                            </>
+
+                            :
+
+                            <li>
                             <Link
                               href="/"
                               className={`group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ${
@@ -199,28 +239,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                               Cursos
                             </Link>
                           </li>
-                          {/* {
-                            user.admin 
-                            
-                            ?
 
-                          <li>
-                            <Link
-                              href="/estudiantes"
-                              className={`group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ${
-                                pathname === "/" && "text-white"
-                              }`}
-                            >
-                              Estudiantes
-                            </Link>
-                          </li>
+                          }
 
-                          :
-
-                          ""
-                          
-                        } */}
-                        
                         </ul>
                       </div>
                       {/* <!-- Dropdown Menu End --> */}
@@ -255,7 +276,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                       fill=""
                     />
                   </svg>
-                  Profile
+                  Perfil
                 </Link>
               </li>
 
@@ -296,7 +317,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                       </clipPath>
                     </defs>
                   </svg>
-                  Settings
+                  Configuración
                 </Link>
               </li>
               {/* <!-- Menu Item Settings --> */}

@@ -1,4 +1,4 @@
-import { getAllCourses } from "@/app/lib/dbActions";
+import { createRequest, getAllCourses } from "@/app/lib/dbActions";
 import { COURSE } from "@/types/courses";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
@@ -6,6 +6,7 @@ import CoursesLoader from "../common/CoursesLoader";
 import { userStore } from "@/reducers/store";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { log } from "console";
 
 
 const fetchCourses = async () => {
@@ -51,6 +52,14 @@ const CoursesTable = () => {
     setUser(userData)
   }, [userData])
 
+  const handleMakeRequest = (courseId: string, userEmail: string) => {
+    const token = localStorage.getItem("authToken")
+
+    if (token) {
+      createRequest(token, courseId, userEmail)
+    }
+  }
+
   const EnabledButton = ( props: any ) => {
 
     const url = getUrl( props.id )
@@ -63,7 +72,10 @@ const CoursesTable = () => {
               ? urls[0].url
                 : "#"
       }`}>
-        <button onClick={() => getUrl(props.id)
+        <button onClick={() => {
+          getUrl(props.id)
+          handleMakeRequest(props.id, userData.email)
+        }
         } className="text-white bg-yellow-500 py-4 px-6 rounded-md sm:block">
           INSCRIBIRSE
         </button>
