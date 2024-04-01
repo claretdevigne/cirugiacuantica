@@ -4,7 +4,7 @@ import DropdownMessage from "./DropdownMessage";
 import DropdownNotification from "./DropdownNotification";
 import DropdownUser from "./DropdownUser";
 import Image from "next/image";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getUserData } from "@/app/lib/dbActions";
 import { userStore } from "@/reducers/store";
 
@@ -15,22 +15,28 @@ const Header = (props: {
 
   const { email, setUser } = userStore()
 
-  useEffect(() => {
+  const fetchingUserData = async () => {
 
-    const token = localStorage.getItem("authToken")
+    const token = localStorage.getItem("authToken")    
 
     if (token) {
-      getUserData(token, email)
-        .then(res => {
-          if (res?.status === 200) {
-            setUser(res.userData)
-          }
-        })
+      return await getUserData(token, email)
     }
+  }
 
+
+  useEffect(() => {
+      fetchingUserData()
+      .then(res => {
+        setUser(res?.userData)
+      })
+      .catch(err => {
+        console.log(err)
+        console.log("ERROR FETCHING USER DATA. HEADER/INDEX.TSX")
+      })
   }, [])
 
-  return (
+  return (  
     <header className="sticky top-0 z-999 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
       <div className="flex flex-grow items-center justify-between px-4 py-4 shadow-2 md:px-6 2xl:px-11">
         <div className="flex items-center gap-2 sm:gap-4 lg:hidden">
@@ -116,7 +122,7 @@ const Header = (props: {
 
               <input
                 type="text"
-                placeholder="Type to search..."
+                placeholder="Buscar"
                 className="w-full bg-transparent pl-9 pr-4 font-medium focus:outline-none xl:w-125"
               />
             </div>
