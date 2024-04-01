@@ -10,23 +10,34 @@ import { userStore } from "@/reducers/store";
 const SignIn: React.FC = () => {
 
   const [clean, setClean] = useState(true)
-  // const [email, setEmail] = useState("")
-  const { setEmail } = userStore()
+  const { setEmail, user, setUser } = userStore()
   const router = useRouter()
 
   const handleSubmit = (e: any) => {
     e.preventDefault()
 
-    const user = e.target.email.value
-    const pass = e.target.password.value
+    const userEmailForm = e.target.email.value
+    const userPassForm = e.target.password.value
 
-    if (user.length && pass.length) {
-      validateCredentials(user, pass)
+    if (userEmailForm.length && userPassForm.length) {
+      validateCredentials(userEmailForm, userPassForm)
         .then((res: any) => {
         if (res.status === 200) {
           localStorage.setItem("authToken", res.token)
-          setEmail(user)
-          router.push("/")
+          setEmail(userEmailForm)
+          getUserData(res.token, userEmailForm)
+            .then(res => {
+              if (res?.status === 200) {
+                setUser(res.userData)
+                
+                if (res.userData.admin) {
+                  router.push("/admin/dashboard")
+                } else {
+                  router.push("/")
+                }
+
+              }
+            })
         } else {
           setClean(false)
         }
