@@ -38,7 +38,7 @@ export default function Home() {
           setRequirements(requirementsList)
         }
       })
-  }, [modalIsActive])
+  }, [modalIsActive, setCourses, setRequirements])
 
   return (
     <>
