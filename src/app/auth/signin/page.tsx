@@ -1,14 +1,17 @@
 'use client'
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { validateCredentials } from "@/app/lib/dbActions";
+import { getUserData, validateCredentials } from "@/app/lib/dbActions";
+import { userStore } from "@/reducers/store";
 
 
 const SignIn: React.FC = () => {
 
   const [clean, setClean] = useState(true)
+  // const [email, setEmail] = useState("")
+  const { setEmail } = userStore()
   const router = useRouter()
 
   const handleSubmit = (e: any) => {
@@ -22,6 +25,7 @@ const SignIn: React.FC = () => {
         .then((res: any) => {
         if (res.status === 200) {
           localStorage.setItem("authToken", res.token)
+          setEmail(user)
           router.push("/")
         } else {
           setClean(false)

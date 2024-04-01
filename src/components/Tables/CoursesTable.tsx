@@ -38,9 +38,6 @@ const urls: { id: string, url: string}[] = [
 const getUrl = (id: string) => {
   const itemList = urls.filter(item => item.id === id)
   const item = itemList[0]
-  console.log(item);
-  
-    
   return item
 }
 

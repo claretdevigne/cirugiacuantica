@@ -7,7 +7,7 @@ import { userStore } from "@/reducers/store";
 
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const { user } = userStore()
+  const { user, setEmail, setUser } = userStore()
 
   const trigger = useRef<any>(null);
   const dropdown = useRef<any>(null);
@@ -17,8 +17,15 @@ const DropdownUser = () => {
   const handleSignOut = () => {
     const token = localStorage.getItem("authToken")
     if (token) {
+      
       removeSession(token)
       localStorage.removeItem("authToken")
+
+      setTimeout(() => {
+        setUser(null)
+        setEmail(null)
+      }, 100)
+      
       router.push("/auth/signin")
     }
   }

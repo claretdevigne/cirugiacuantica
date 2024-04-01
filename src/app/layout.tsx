@@ -6,7 +6,7 @@ import Loader from "@/components/common/Loader";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { useStore, userStore } from "@/reducers/store";
 import { useRouter } from "next/navigation";
-import { validateToken } from "./lib/dbActions";
+import { getUserData, validateToken } from "./lib/dbActions";
 
 export default function RootLayout({
   children,
@@ -18,16 +18,22 @@ export default function RootLayout({
   const queryClient = new QueryClient()
   const { authenticate: setAuth} = useStore()
   const route = useRouter()
-  const { setEmail } = userStore()
+  const { setEmail, setUser } = userStore()
   
   const authenticate = () => {
     const authToken = localStorage.getItem("authToken")
-
+    
     if (authToken) {
       validateToken(authToken)
         .then(res => {
           if (res?.status === 200) {
             setEmail(res.email)
+            getUserData(authToken, res.email)
+              .then(res => {
+                if (res?.status === 200) {
+                  setUser(res.userData)
+                }
+              })
           } else {
             route.push("/auth/signin")
             setLoading(false)

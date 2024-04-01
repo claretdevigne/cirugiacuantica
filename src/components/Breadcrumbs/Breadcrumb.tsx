@@ -18,7 +18,7 @@ const Breadcrumb = ({ pageName, types }: BreadcrumbProps) => {
             <Link className="font-medium" href="/">
               {
                 types === "cursos"
-                 ? "Cursos /"
+                  ? "Cursos /"
                   : "Dashboard /"
               }
             </Link>

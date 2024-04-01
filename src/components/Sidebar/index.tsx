@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import SidebarLinkGroup from "./SidebarLinkGroup";
+import { userStore } from "@/reducers/store";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -12,6 +13,9 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
+
+  const { user } = userStore()
+
   const pathname = usePathname();
 
   const trigger = useRef<any>(null);
@@ -195,6 +199,11 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                               Cursos
                             </Link>
                           </li>
+                          {/* {
+                            user.admin 
+                            
+                            ?
+
                           <li>
                             <Link
                               href="/estudiantes"
@@ -205,6 +214,13 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                               Estudiantes
                             </Link>
                           </li>
+
+                          :
+
+                          ""
+                          
+                        } */}
+                        
                         </ul>
                       </div>
                       {/* <!-- Dropdown Menu End --> */}

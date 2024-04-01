@@ -76,7 +76,7 @@ export const validateToken = async (token: string) => {
     try {
 
         const connection = await connectDB(dbName, sessionsCollectionName)
-        const session = await connection.find({ token: token }).toArray()
+        const session = await connection.find({ token: token }).toArray()        
         
         if (session.length) {
             
