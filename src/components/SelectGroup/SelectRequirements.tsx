@@ -66,9 +66,9 @@ const SelectRequirements: any = () => {
 
           {
 
-            requirements.map((course: {id: string, name: string}) => {
+            requirements.map((course: {id: string, name: string}, key: number) => {
               return (
-                <option value={course.id} className="text-body dark:text-bodydark">
+                <option key={key} value={course.id} className="text-body dark:text-bodydark">
                   {course.name}
                 </option>
               )
