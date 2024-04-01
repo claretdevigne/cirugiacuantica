@@ -20,8 +20,6 @@ const Header = (props: {
     const token = localStorage.getItem("authToken")    
 
     if (token) {
-      console.log(email);
-      
       return await getUserData(token, email)
     }
   }
