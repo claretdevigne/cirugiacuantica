@@ -1,7 +1,8 @@
 import { useState } from "react";
 
-const SwitcherFour = ( props: any ) => {
-  const [enabled, setEnabled] = useState<boolean>(props.enable);
+const EditSwitcher = ( props: any ) => {
+  // const [enabled, setEnabled] = useState<boolean>(props.enable);
+  const enabled = props.enable
 
   return (
     <div>
@@ -16,9 +17,7 @@ const SwitcherFour = ( props: any ) => {
             name="status"
             value={`${enabled}`}
             className="sr-only"
-            onChange={() => {
-              setEnabled(!enabled);
-            }}
+            onChange={ () => props.setStatus(!enabled) }
           />
           <div className={`block h-8 w-14 rounded-full ${ enabled ? "bg-yellow-500" : "bg-zinc-500" }`}></div>
           <div
@@ -32,4 +31,4 @@ const SwitcherFour = ( props: any ) => {
   );
 };
 
-export default SwitcherFour;
+export default EditSwitcher;

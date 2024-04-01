@@ -2,7 +2,7 @@
 import { useManageCoursesStore } from "@/reducers/store";
 import React, { useState } from "react";
 
-const SelectGroupTwo: any = (props: { name: string }) => {
+const SelectRequirements: any = () => {
   const [selectedOption, setSelectedOption] = useState<string>("");
   const [isOptionSelected, setIsOptionSelected] = useState<boolean>(false);
   const { requirements } = useManageCoursesStore()
@@ -14,9 +14,7 @@ const SelectGroupTwo: any = (props: { name: string }) => {
   return (
     <div>
       <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-        {
-          props.name
-        }
+        REQUIREMENTS
       </label>
 
       <div className="relative z-20 bg-white dark:bg-form-input">
@@ -53,6 +51,7 @@ const SelectGroupTwo: any = (props: { name: string }) => {
 
         <select
           value={selectedOption}
+          name="requirements"
           onChange={(e) => {
             setSelectedOption(e.target.value);
             changeTextColor();
@@ -101,4 +100,4 @@ const SelectGroupTwo: any = (props: { name: string }) => {
   );
 };
 
-export default SelectGroupTwo;
+export default SelectRequirements;

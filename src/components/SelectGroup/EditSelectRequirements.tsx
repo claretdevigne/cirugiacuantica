@@ -2,8 +2,8 @@
 import { useManageCoursesStore } from "@/reducers/store";
 import React, { useState } from "react";
 
-const SelectGroupTwo: any = (props: { name: string }) => {
-  const [selectedOption, setSelectedOption] = useState<string>("");
+const EditSelectRequirements: any = ( props: any ) => {
+  const selectedOption = props.selected[0]
   const [isOptionSelected, setIsOptionSelected] = useState<boolean>(false);
   const { requirements } = useManageCoursesStore()
 
@@ -14,9 +14,7 @@ const SelectGroupTwo: any = (props: { name: string }) => {
   return (
     <div>
       <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-        {
-          props.name
-        }
+        REQUIREMENTS
       </label>
 
       <div className="relative z-20 bg-white dark:bg-form-input">
@@ -53,15 +51,16 @@ const SelectGroupTwo: any = (props: { name: string }) => {
 
         <select
           value={selectedOption}
+          name="requirements"
           onChange={(e) => {
-            setSelectedOption(e.target.value);
+            props.setSelected(e.target.value)
             changeTextColor();
           }}
           className={`relative z-20 w-full appearance-none rounded border border-stroke bg-transparent px-12 py-3 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input ${
             isOptionSelected ? "text-black dark:text-white" : ""
           }`}
         >
-          <option value="" disabled className="text-body dark:text-bodydark">
+          <option value="" className="text-body dark:text-bodydark">
             Selecciona
           </option>
 
@@ -69,7 +68,7 @@ const SelectGroupTwo: any = (props: { name: string }) => {
 
             requirements.map((course: {id: string, name: string}) => {
               return (
-                <option value={course.id} className="text-body dark:text-bodydark">
+                <option key={course.id} value={course.id} className="text-body dark:text-bodydark">
                   {course.name}
                 </option>
               )
@@ -101,4 +100,4 @@ const SelectGroupTwo: any = (props: { name: string }) => {
   );
 };
 
-export default SelectGroupTwo;
+export default EditSelectRequirements;

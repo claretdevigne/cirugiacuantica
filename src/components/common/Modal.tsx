@@ -3,7 +3,7 @@ import { DeleteCourse } from "@/app/admin/manage/courses/deleteCourse"
 import { EditCourse } from "@/app/admin/manage/courses/editCourse"
 import { useManageCoursesStore } from "@/reducers/store"
 
-export const Modal = ( props: any )  => {
+export const Modal = ()  => {
 
     const { modalIsActive, modalToggle, modalDefinition } = useManageCoursesStore()
 
@@ -24,9 +24,9 @@ export const Modal = ( props: any )  => {
                             <div className="flex justify-between items-center pb-3">
                                 <p className="text-2xl font-bold">
                                     {
-                                        props.definition === "edit"
+                                        modalDefinition === "edit"
                                             ? "Editar Curso"
-                                                : props.definition === "add"
+                                                : modalDefinition === "add"
                                                     ? "Agregar Curso" 
                                                         : ""
                                     }

@@ -4,7 +4,7 @@ import "@/css/style.css";
 import React, { useEffect, useState } from "react";
 import Loader from "@/components/common/Loader";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import { useStore } from "@/reducers/store";
+import { useStore, userStore } from "@/reducers/store";
 import { useRouter } from "next/navigation";
 import { validateToken } from "./lib/dbActions";
 
@@ -18,6 +18,7 @@ export default function RootLayout({
   const queryClient = new QueryClient()
   const { authenticate: setAuth} = useStore()
   const route = useRouter()
+  const { setEmail } = userStore()
   
   const authenticate = () => {
     const authToken = localStorage.getItem("authToken")
@@ -25,11 +26,12 @@ export default function RootLayout({
     if (authToken) {
       validateToken(authToken)
         .then(res => {
-          if (res?.status !== 200) {
-            console.log(29, res?.status);
+          if (res?.status === 200) {
+            setEmail(res.email)
+          } else {
             route.push("/auth/signin")
             setLoading(false)
-          }}) 
+          }})
     } else {
       route.push("/auth/signin")
     }

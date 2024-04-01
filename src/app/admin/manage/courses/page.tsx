@@ -4,8 +4,8 @@ import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import TableManageCourses from "@/components/Tables/TableManageCourses";
 import { Modal } from "@/components/common/Modal";
 import { useManageCoursesStore } from "@/reducers/store";
-import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { COURSE } from "@/types/courses";
+import { useEffect, useState } from "react";
 
 const fetchAllCourses = async () => {
   const token = localStorage.getItem("authToken")
@@ -16,39 +16,35 @@ const fetchAllCourses = async () => {
 }
 
 export default function Home() {
-  const [id, setId] = useState()
-  const [modalDefinition, setModalDefinition] = useState("edit")
-  const { isLoading, error, data } = useQuery({queryKey: ["courses"], queryFn: fetchAllCourses})
 
-  // ----- CONFIGURAR LA CARGA DE LOS CURSOS
+  const { setCourses, setRequirements, modalIsActive } = useManageCoursesStore()
 
-  //TODO: CUANDO SE ACTIVA EL MODAL ENVIA EL CURSO EN BASE AL ID
-  //TODO: DEFINIR PROP PARA CONTENIDO DEL MODAL (EDITAR, CREAR, ELIMINAR)
+  useEffect(() => {
 
-  const course = {
-    _id: 1,
-    url: "google.com",
-    name: "CURSO 1",
-    status: true,
-    requirements: []
-  }
+    fetchAllCourses()
+      .then(res => {
+        if (res) {
+          const courses = JSON.parse(res)
+          setCourses(courses)
 
-  const activator = (id: any, typeOfCourse: string) => {
-    if (typeOfCourse === "edit" || typeOfCourse === "delete") {
-      setId(id)
-    }
+          const requirementsList: { id: any, name: string}[] = []
+          courses.map((course: COURSE) => {
+            requirementsList.push({
+              id: course._id,
+              name: course.name
+            })
+          })
 
-    setModalDefinition(typeOfCourse)
-  }
-
-  const store = useManageCoursesStore()
-
+          setRequirements(requirementsList)
+        }
+      })
+  }, [modalIsActive])
 
   return (
     <>
       <DefaultLayout>
-        <Modal course={course} definition={modalDefinition} />
-        <TableManageCourses coursesList={ data } activator={activator} />
+        <Modal />
+        <TableManageCourses />
       </DefaultLayout>
     </>
   );

@@ -15,8 +15,20 @@ export const useManageCoursesStore = create(set => ({
   selectedId: null,
   modalDefinition: "",
   selectedCourse: null,
+  courses: [],
+  requirements: [],
+
   modalToggle: () => set((state) => ({ modalIsActive: !state.modalIsActive })),
   setSelectedId: (payload) => set(() => ({ selectedId: payload})),
   setModalDefinition: (payload) => set(() => ({ modalDefinition: payload})),
-  setSelectedCourse: (payload) => set(() => ({ selectedCourse: payload}))
+  setSelectedCourse: (payload) => set(() => ({ selectedCourse: payload})),
+  setCourses: (payload) => set(() => ({ courses: payload})),
+  setRequirements: (payload) => set(() => ({ requirements: payload}))
+}))
+
+export const userStore = create(set => ({
+  email: null,
+  user: null,
+  setEmail: (payload) => set(() => ({ email: payload })),
+  setUser: (payload) => set(() => ({ user: payload }))
 }))

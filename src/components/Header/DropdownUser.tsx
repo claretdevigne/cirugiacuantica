@@ -3,9 +3,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { removeSession } from "@/app/lib/dbActions";
+import { userStore } from "@/reducers/store";
 
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const { user } = userStore()
 
   const trigger = useRef<any>(null);
   const dropdown = useRef<any>(null);
@@ -57,7 +59,11 @@ const DropdownUser = () => {
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-            Thomas Anree
+            {
+              user
+                ? user.name
+                  : ""
+            }
           </span>
         </span>
 
@@ -103,7 +109,8 @@ const DropdownUser = () => {
         <ul className="flex flex-col gap-5 border-b border-stroke px-6 py-7.5 dark:border-strokedark">
           <li>
             <Link
-              href="/profile"
+              href="#"
+              // href="/profile"
               className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
             >
               <svg
@@ -123,7 +130,7 @@ const DropdownUser = () => {
                   fill=""
                 />
               </svg>
-              My Profile
+              Mi perfil
             </Link>
           </li>
           <li>
@@ -144,12 +151,13 @@ const DropdownUser = () => {
                   fill=""
                 />
               </svg>
-              My Contacts
+              Contactos
             </Link>
           </li>
           <li>
             <Link
-              href="/settings"
+              // href="/settings"
+              href="#"
               className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
             >
               <svg
@@ -169,7 +177,7 @@ const DropdownUser = () => {
                   fill=""
                 />
               </svg>
-              Account Settings
+              Configuración de cuenta
             </Link>
           </li>
         </ul>

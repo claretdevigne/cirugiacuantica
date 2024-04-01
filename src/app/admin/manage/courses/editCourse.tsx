@@ -1,4 +1,8 @@
+import { updateCourse } from "@/app/lib/dbActions"
+import EditSelectRequirements from "@/components/SelectGroup/EditSelectRequirements"
 import SelectGroupTwo from "@/components/SelectGroup/SelectGroupTwo"
+import SelectRequirements from "@/components/SelectGroup/SelectRequirements"
+import EditSwitcher from "@/components/Switchers/EditSwitcher"
 import SwitcherFour from "@/components/Switchers/SwitcherFour"
 import { useManageCoursesStore } from "@/reducers/store"
 import { useState } from "react"
@@ -6,8 +10,48 @@ import { useState } from "react"
 export const EditCourse = () => {
 
     const course = useManageCoursesStore().selectedCourse
+    const toggle = useManageCoursesStore().modalToggle
+    const [clean, setClean] = useState<boolean>()
     const [courseName, setCourseName] = useState(course.name)
     const [courseUrl, setcourseUrl] = useState(course.url)
+    const [courseStatus, setCourseStatus] = useState(course.status)
+    const [courseRequirement, setCourseRequirement] = useState(course.requirements)
+    
+    const handleSaveEdits = (e: any) => {
+
+      e.preventDefault()
+      const name = courseName
+      const url = courseUrl
+      const status = courseStatus
+      const req = courseRequirement
+
+      if (name && url ) {
+        const token = localStorage.getItem("authToken")
+
+        const courseEdited = {
+          _id: course._id,
+          name: name,
+          url: url,
+          status: status,
+          requirements: req
+        }
+        
+
+        if (token) {
+          updateCourse(token, courseEdited)
+            .then(res => {
+              if (res?.status === 201) {
+                console.log("CAMBIOS GUARDADOS");
+                
+                toggle()
+                setClean(true)
+              } else {
+                setClean(false)
+              }
+            })
+        }
+      
+    }}
 
     return (
         <form className="rounded-sm p-5 border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -16,6 +60,7 @@ export const EditCourse = () => {
                   NOMBRE
                 </label>
                 <input
+                  name="name"
                   onChange={ (e) => { setCourseName(e.target.value) }}
                   type="text"
                   value={ courseName }
@@ -28,6 +73,7 @@ export const EditCourse = () => {
                   URL IMAGEN
                 </label>
                 <input
+                  name="url"
                   onChange={e => setcourseUrl(e.target.value)}
                   type="text"
                   value={ courseUrl }
@@ -37,15 +83,15 @@ export const EditCourse = () => {
 
             <div className="flex items-center mt-4 text-sm font-medium text-black dark:text-white">
                 <p className="mr-5">STATUS</p>
-                <SwitcherFour enable={ course.status } />
+                <EditSwitcher enable={ courseStatus } setStatus={ setCourseStatus }/>
             </div>
 
             <div className="mt-5">
-                <SelectGroupTwo name="REQUERIMIENTOS" cursos={ course } />
+                <EditSelectRequirements selected={ courseRequirement } setSelected={ setCourseRequirement } />
             </div>
 
             <div className="flex justify-center my-3">
-                <input className="text-white bg-yellow-500 border-yellow-500 py-2 px-8 rounded-md cursor-pointer hover:opacity-90 hover:text-zinc-400" type="submit" value="Guardar" />
+                <input onClick={ e => handleSaveEdits(e) } className="text-white bg-yellow-500 border-yellow-500 py-2 px-8 rounded-md cursor-pointer hover:opacity-90 hover:text-zinc-400" type="submit" value="Guardar" />
             </div>
             
         </form>

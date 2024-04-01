@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/app/lib/auth";
+import { validateCredentials } from "@/app/lib/dbActions";
 
 
 const SignIn: React.FC = () => {
@@ -18,8 +18,8 @@ const SignIn: React.FC = () => {
     const pass = e.target.password.value
 
     if (user.length && pass.length) {
-      useAuth(user, pass)
-       .then((res: any) => {
+      validateCredentials(user, pass)
+        .then((res: any) => {
         if (res.status === 200) {
           localStorage.setItem("authToken", res.token)
           router.push("/")

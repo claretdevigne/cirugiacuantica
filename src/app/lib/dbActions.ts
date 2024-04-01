@@ -1,6 +1,7 @@
 'use server'
 
 const bcrypt = require("bcrypt")
+import { COURSE } from "@/types/courses"
 import { USER } from "@/types/user"
 import { randomUUID } from "crypto"
 import { ObjectId } from "mongodb"
@@ -50,7 +51,7 @@ export const validateCredentials = async (email: string, password: string) => {
         if (result) {
             
             // CREA LA SESIÓN EN LA BASE DE DATOS.
-            const session = createSession(email)
+            const session = createSession(email, user[0].admin)
 
             return session.then(res => {
                 
@@ -115,7 +116,7 @@ const createToken = async () => {
 }
 
 // CREA UNA SESIÓN EN LA BASE DE DATOS
-const createSession = async (email: string) => {
+const createSession = async (email: string, admin: boolean) => {
 
     try {
         const connection = await connectDB(dbName, sessionsCollectionName)
@@ -127,6 +128,7 @@ const createSession = async (email: string) => {
         const newSession = {
             token: token,
             email: email,
+            admin: admin,
             creation_date: currentDate,
             expiration_date: expirationDate
         }        
@@ -136,7 +138,7 @@ const createSession = async (email: string) => {
         if (sessionSaved) {
             return {
                 status: 200,
-                token: token
+                token: token,
             }
         }
 
@@ -240,6 +242,38 @@ export const getUsersByCourseId = async (token: string, id: string) => {
 }
 
 
+// GET USER DATA
+export const getUserData = async (token: string, email: string) => {
+
+    try {
+
+        const validation = await validateToken(token)
+
+        if (validation?.status === 200) {
+
+            const connection = await connectDB(dbName, usersCollectionName)
+            const user = await connection.find({ email: email }).toArray()
+            
+            const userData = {
+                    name: user[0].name,
+                    email: user[0].email,
+                    admin: user[0].admin,
+                    current_courses: user[0].current_courses,
+                    courses_completed: user[0].courses_completed,
+                }
+
+            return {
+                status: 200,
+                userData: userData
+            }
+
+        } 
+        
+    } catch (err) {
+        console.log("Fallo al conectar");    
+    }
+}
+
 // CREATE USER
 export const createNewUser = async (newUser: USER) => {
 
@@ -322,3 +356,76 @@ export const getCoursesById = async (token: string, id: string) => {
 
 
 }
+
+export const createCourse = async (token: string, course: any) => {
+    
+    const validation = await validateToken(token)
+
+    if (validation?.status === 200) {
+
+        const connection = await connectDB(dbName, coursesCollectionName)
+        const added = await connection.insertMany([course])
+
+        if (added) {
+            return {
+                status: 201
+            }
+        }
+
+    return {
+        status: 401
+    }
+}}
+
+export const updateCourse = async (token: string, course: COURSE) => {
+
+    const validation = await validateToken(token)
+
+    if (validation?.status === 200) {
+
+        const connection = await connectDB(dbName, coursesCollectionName)
+        
+        const id = new ObjectId(String(course._id))
+
+        const newCourse = {
+            name: course.name,
+            url: course.url,
+            status: course.status,
+            requirements: course.requirements
+        }
+
+        const added = await connection.updateOne({ _id: id }, { $set: newCourse })        
+
+        if (added) {
+            return {
+                status: 201
+            }
+        }
+
+    return {
+        status: 401
+    }
+}}
+
+export const deleteCourse = async (token: string, id: string) => {
+
+    const validation = await validateToken(token)
+
+    if (validation?.status === 200) {
+
+        const connection = await connectDB(dbName, coursesCollectionName)
+        
+        const objectId = new ObjectId(String(id))
+
+        const deleted = await connection.deleteOne({ _id: objectId })
+        
+        if (deleted) {
+            return {
+                status: 404
+            }
+        }
+
+    return {
+        status: 401
+    }
+}}

@@ -8,52 +8,57 @@ type coursesDataType = {
   requirements: string[]
 }
 
-const coursesData: coursesDataType[] = [
-  {
-    _id: 1,
-    url: "google.com",
-    name: "CURSO 1",
-    status: "Activo",
-    requirements: []
-  },
-  {
-    _id: 2,
-    url: "google.com",
-    name: "CURSO 2",
-    status: "Inactivo",
-    requirements: []
-  },
-  {
-    _id: 3,
-    url: "google.com",
-    name: "CURSO 3",
-    status: "Activo",
-    requirements: []
-  },
-  {
-    _id: 4,
-    url: "google.com",
-    name: "CURSO 4",
-    status: "Inactivo",
-    requirements: []
-  },
-  {
-    _id: 5,
-    url: "google.com",
-    name: "CURSO 5",
-    status: "Activo",
-    requirements: []
-  },
-];
+// const coursesData: coursesDataType[] = [
+//   {
+//     _id: 1,
+//     url: "google.com",
+//     name: "CURSO 1",
+//     status: "Activo",
+//     requirements: []
+//   },
+//   {
+//     _id: 2,
+//     url: "google.com",
+//     name: "CURSO 2",
+//     status: "Inactivo",
+//     requirements: []
+//   },
+//   {
+//     _id: 3,
+//     url: "google.com",
+//     name: "CURSO 3",
+//     status: "Activo",
+//     requirements: []
+//   },
+//   {
+//     _id: 4,
+//     url: "google.com",
+//     name: "CURSO 4",
+//     status: "Inactivo",
+//     requirements: []
+//   },
+//   {
+//     _id: 5,
+//     url: "google.com",
+//     name: "CURSO 5",
+//     status: "Activo",
+//     requirements: []
+//   },
+// ];
 
-const TableManageCourses = (props: any) => {
 
-  // const coursesData: coursesDataType[] = JSON.parse(props.coursesList);
-  const { modalToggle, setSelectedId, setModalDefinition, setSelectedCourse } = useManageCoursesStore()
+const TableManageCourses = () => {
 
-  const handleModal = (course: object, definition: string) => {
+  const { modalToggle, setModalDefinition, setSelectedCourse, modalIsActive, courses } = useManageCoursesStore()
+  const coursesData = courses
+
+  const handleModal = (definition: string, course?: object) => {
     setModalDefinition(definition)
-    setSelectedCourse(course)
+
+    if (definition === "edit" || definition === "delete") {
+      setSelectedCourse(course)
+    }
+
     modalToggle()
   }
 
@@ -112,7 +117,7 @@ const TableManageCourses = (props: any) => {
                     </td>
                     <td className="border-b border-[#eee] px-4 py-5 dark:border-strokedark">
                       <div className="flex items-center space-x-3.5">
-                      <button onClick={ () => handleModal(courseItem, "edit") } className="hover:text-primary">
+                      <button onClick={ () => handleModal("edit", courseItem) } className="hover:text-primary">
                           <svg 
                             className="w-6 h-6 text-gray-800 dark:text-white" 
                             aria-hidden="true" 
@@ -131,7 +136,7 @@ const TableManageCourses = (props: any) => {
                             />
                           </svg>
                         </button>
-                        <button onClick={ () => handleModal(courseItem, "delete") } className="hover:text-primary">
+                        <button onClick={ () => handleModal("delete", courseItem) } className="hover:text-primary">
                           <svg
                             className="fill-current"
                             width="18"
@@ -166,8 +171,11 @@ const TableManageCourses = (props: any) => {
             
           </tbody>
         </table>
-        <div className="flex justify-center my-5">
-          <button onClick={() => props.activator(null, "add") } className="bg-yellow-500 rounded-md text-white py-2 px-5 hover:transition shadow-3 hover:opacity-90">Agregar curso</button>
+        <div className={`flex justify-center my-5`}>
+          {
+            //TODO: CORREGIR BUG EN BOTÓN
+          }
+          <button onClick={ () => handleModal("add") } className={`${ modalIsActive ? "hidden" : "" } bg-yellow-500 rounded-md text-white py-2 px-5 hover:transition shadow-3 hover:opacity-90`}>Agregar curso</button>
         </div>
       </div>
     </div>

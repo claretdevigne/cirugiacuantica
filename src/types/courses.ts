@@ -1,6 +1,7 @@
 export type COURSE = {
-  _id: string;
-  name: string;
-  url: string;
-  requirements: Array<string>
+  _id: number,
+  url: string,
+  name: string,
+  status: string,
+  requirements: string
 };
