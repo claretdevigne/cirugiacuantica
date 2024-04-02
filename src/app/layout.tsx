@@ -4,7 +4,7 @@ import "@/css/style.css";
 import React, { useEffect, useState } from "react";
 import Loader from "@/components/common/Loader";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import { loadingStore, useStore, userStore } from "@/reducers/store";
+import { userStore } from "@/reducers/store";
 import { useRouter } from "next/navigation";
 import { getUserData, validateToken } from "./lib/dbActions";
 
@@ -16,52 +16,81 @@ export default function RootLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true)
   const queryClient = new QueryClient()
-  const { authenticate: setAuth} = useStore()
   const route = useRouter()
-  const { setEmail, setUser } = userStore()
+  const { setEmail, setUser, email, user} = userStore()
 
-  // const { loading } = loadingStore()
   const handleLoading = () => {
     setTimeout(() => {
       setLoading(false)
-    }, 200)
+    }, 400)
   }
 
-  const authenticate = () => {
-    localStorage.setItem("authToken", "asdasdas")
-    const token = localStorage.getItem("authToken")
-    
-    //TODO: DESCOMENTAR
-    if (token) {
-      validateToken(token)
+  const getData = async (token: string, email: string) => {
+      return await getUserData(token, email)
         .then(res => {
-          if (res?.status === 401){
-            route.push("/auth/signin")
-            handleLoading()
-          } else if (res?.status === 200){
-            getUserData(token, res.email)
-              .then(userRes => {
-                if (userRes?.status === 200) {
-                  setUser(userRes.userData)
-                }
-              })
-            route.push("/")
-            handleLoading()
+          if (res?.status === 200) {
+            localStorage.setItem("userData", JSON.stringify(res.userData))
+            setUser(res.userData)
+            return true
+          } else {
+            return false
           }
         })
+  }
+
+  const redirect = (status: boolean) => {
+    if (status) {
+      route.push("/")
     } else {
       route.push("/auth/signin")
+    }
+    handleLoading()
+  }
+
+  const authenticate = () => {  
+
+    const token = localStorage.getItem("authToken")
+
+    if (token) {
+      try {
+        
+        validateToken(token)
+          .then(res => {
+            if (res?.status === 200) {
+              setEmail(res.email)
+              const userData = localStorage.getItem("userData")
+              if (userData) {
+                setUser(JSON.parse(userData))
+                redirect(true)
+              } else {
+                getData(token, email)
+                .then(res => {
+                  if (res) {
+                    redirect(true)
+                  } else {
+                    redirect(false)
+                  }
+                })
+              }
+              
+            } else {
+              redirect(false)
+            }
+          })
+
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    else {
+      redirect(false)
     }
   }
 
   useEffect(() => {
     authenticate()
-    //TODO: BORRAR LOG
-    console.log("PUNTO DE ENTRADA: Layout.tsx");
-    
   }, [])
-
-  // TODO: CORREGIR CARGA DE PÄGINA
 
   return (
     <html lang="en">

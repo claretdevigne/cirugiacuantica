@@ -19,12 +19,11 @@ const DropdownUser = () => {
     if (token) {
       
       removeSession(token)
-      localStorage.removeItem("authToken")
-
       setTimeout(() => {
+        localStorage.clear()
         setUser(null)
         setEmail(null)
-      }, 100)
+      }, 200)
       
       router.push("/auth/signin")
     }
@@ -55,6 +54,7 @@ const DropdownUser = () => {
     document.addEventListener("keydown", keyHandler);
     return () => document.removeEventListener("keydown", keyHandler);
   });
+
 
   return (
     <div className="relative">

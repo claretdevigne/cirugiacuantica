@@ -15,6 +15,7 @@ interface SidebarProps {
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
   // const [ admin, setAdmin ] = useState(false)
+  const [ isLoading, setIsLoading ] = useState(true)
   
   const { user } = userStore()
 
@@ -29,11 +30,11 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     storedSidebarExpanded === null ? false : storedSidebarExpanded === "true",
   );
 
-  // useEffect(() => {
-  //   if (user) {
-  //     setAdmin(user.admin)
-  //   }
-  // }, [user])
+  useEffect(() => {
+    if (user) {
+      setIsLoading(false)
+    }
+  }, [user])
 
   // close on click outside
   useEffect(() => {
@@ -199,6 +200,14 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                         <ul className="mb-5.5 mt-4 flex flex-col gap-2.5 pl-6">
                           
                           {
+
+                            isLoading
+
+                            ?
+
+                            ""
+
+                            :
 
                             user.admin
 
