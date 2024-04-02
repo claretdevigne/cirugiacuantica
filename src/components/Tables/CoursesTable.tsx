@@ -149,7 +149,8 @@ const CoursesTable = () => {
 
                         :
 
-                        !course.requirements.length
+                        !course.requirements.length 
+                        && !user.courses_completed.includes(course._id)
 
                         ?
 

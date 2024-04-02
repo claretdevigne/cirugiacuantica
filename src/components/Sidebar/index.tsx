@@ -6,7 +6,6 @@ import Link from "next/link";
 import Image from "next/image";
 import SidebarLinkGroup from "./SidebarLinkGroup";
 import { userStore } from "@/reducers/store";
-import { useQuery } from "@tanstack/react-query";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -15,7 +14,7 @@ interface SidebarProps {
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
-  const [ admin, setAdmin ] = useState(false)
+  // const [ admin, setAdmin ] = useState(false)
   
   const { user } = userStore()
 
@@ -30,11 +29,11 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     storedSidebarExpanded === null ? false : storedSidebarExpanded === "true",
   );
 
-  useEffect(() => {
-    if (user) {
-      setAdmin(user.admin)
-    }
-  }, [user])
+  // useEffect(() => {
+  //   if (user) {
+  //     setAdmin(user.admin)
+  //   }
+  // }, [user])
 
   // close on click outside
   useEffect(() => {
@@ -201,7 +200,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           
                           {
 
-                            admin
+                            user.admin
 
                             ?
                             <>

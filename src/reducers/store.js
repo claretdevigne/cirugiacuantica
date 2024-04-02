@@ -32,3 +32,8 @@ export const userStore = create(set => ({
   setEmail: (payload) => set(() => ({ email: payload })),
   setUser: (payload) => set(() => ({ user: payload }))
 }))
+
+export const loadingStore = create(set => ({
+  loading: true,
+  setLoading: (payload) => set(() => ({ loading: payload }))
+}))

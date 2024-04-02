@@ -4,8 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { getUserData, validateCredentials } from "@/app/lib/dbActions";
-import { userStore } from "@/reducers/store";
-
+import { loadingStore, userStore } from "@/reducers/store";
 
 const SignIn: React.FC = () => {
 
@@ -20,29 +19,28 @@ const SignIn: React.FC = () => {
     const userPassForm = e.target.password.value
 
     if (userEmailForm.length && userPassForm.length) {
+      
       validateCredentials(userEmailForm, userPassForm)
         .then((res: any) => {
-        if (res.status === 200) {
-          localStorage.setItem("authToken", res.token)
-          setEmail(userEmailForm)
-          getUserData(res.token, userEmailForm)
-            .then(res => {
-              if (res?.status === 200) {
-                setUser(res.userData)
-                
-                if (res.userData.admin) {
-                  router.push("/admin/dashboard")
-                } else {
-                  router.push("/")
+          if(res.status === 200) {
+            localStorage.setItem("authToken", res.token)
+            setEmail(userEmailForm)
+            getUserData(res.token, userEmailForm)
+              .then(res => {
+                if (res?.status === 200) {
+                  setUser(res.userData)
+                  if (res.userData.admin) {
+                    router.push("/admin/dashboard")
+                  } else {
+                    router.push("/")
+                  }
                 }
-
-              }
-            })
-        } else {
-          setClean(false)
-        }
-      })     
-    } 
+              })
+          }
+        })
+    } else {
+      setClean(false)
+    }
   }
 
   return (

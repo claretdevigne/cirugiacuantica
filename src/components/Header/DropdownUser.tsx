@@ -67,9 +67,7 @@ const DropdownUser = () => {
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
             {
-              user
-                ? user.name
-                  : ""
+              user.name
             }
           </span>
         </span>
@@ -115,9 +113,9 @@ const DropdownUser = () => {
       >
         <ul className="flex flex-col gap-5 border-b border-stroke px-6 py-7.5 dark:border-strokedark">
           <li>
-            <Link
+            <Link onClick={() => console.log(user)
+            }
               href="#"
-              // href="/profile"
               className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
             >
               <svg

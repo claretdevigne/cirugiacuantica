@@ -5,6 +5,7 @@ import CoursesTable from "@/components/Tables/CoursesTable";
 
 export default function Home() {
 
+
   return (
     <>
       <DefaultLayout>
