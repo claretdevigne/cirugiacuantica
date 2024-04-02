@@ -30,17 +30,27 @@ export default function RootLayout({
         .then(res => {
           if (res?.status === 200) {
             localStorage.setItem("userData", res.userData)
-            setUser(JSON.parse(res.userData))
-            return true
+            const data = JSON.parse(res.userData)
+            setUser(data)
+            return {
+              status: true,
+              admin: data.admin
+            }
           } else {
-            return false
+            return {
+              status: false
+            }
           }
         })
   }
 
-  const redirect = (status: boolean) => {
+  const redirect = (status: boolean, admin: boolean) => {
     if (status) {
-      route.push("/")
+      if (admin) {
+        route.push("/admin/dashboard")    
+      } else {
+        route.push("/")
+      }
     } else {
       route.push("/auth/signin")
     }
@@ -60,21 +70,22 @@ export default function RootLayout({
               setEmail(res.email)
               const userData = localStorage.getItem("userData")
               if (userData) {
-                setUser(JSON.parse(userData))
-                redirect(true)
+                const data = JSON.parse(userData)
+                setUser(data)
+                redirect(true, data.admin)
               } else {
                 getData(token, email)
                 .then(res => {
-                  if (res) {
-                    redirect(true)
+                  if (res.status) {
+                    redirect(true, res.admin)
                   } else {
-                    redirect(false)
+                    redirect(false, false)
                   }
                 })
               }
               
             } else {
-              redirect(false)
+              redirect(false, false)
             }
           })
 
@@ -84,7 +95,7 @@ export default function RootLayout({
     }
 
     else {
-      redirect(false)
+      redirect(false, false)
     }
   }
 
