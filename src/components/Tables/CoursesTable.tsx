@@ -1,12 +1,10 @@
-import { createRequest, getAllCourses } from "@/app/lib/dbActions";
+import { createRequest, getAllCourses, getUserData } from "@/app/lib/dbActions";
 import { COURSE } from "@/types/courses";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import CoursesLoader from "../common/CoursesLoader";
 import { userStore } from "@/reducers/store";
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { log } from "console";
 
 
 const fetchCourses = async () => {
@@ -35,63 +33,123 @@ const urls: { id: string, url: string}[] = [
   }
 ]
 
-
 const getUrl = (id: string) => {
   const itemList = urls.filter(item => item.id === id)
   const item = itemList[0]
-  return item
+  return item.url
 }
+
+const refetchData = (refetch: Function, email: string, setUser: Function) => {
+  refetch()
+
+  const token = localStorage.getItem("authToken")
+
+  if (token) {
+    getUserData(token, email)
+      .then(res => {
+        if (res?.status === 200) {
+          setUser(JSON.parse(res.userData))
+        }
+      })
+  }
+  
+}
+
 
 const CoursesTable = () => {
 
-  const { isLoading, isError, data: courses = [] } = useQuery({queryKey: ["courses"], queryFn: fetchCourses})
-  const [user, setUser] = useState<any>(null)
-  const userData = userStore().user
+  const { isLoading, isError, data: courses = [], refetch } = useQuery({queryKey: ["courses"], queryFn: fetchCourses})
+  const { user, setUser } = userStore()
 
   useEffect(() => {
-    setUser(userData)
-  }, [userData])
+    const token = localStorage.getItem("authToken")
+
+    if (token) {
+      getUserData(token, user.email)
+        .then((res: any) => {
+          if (res?.status === 200) {
+            console.log(res.userData)
+            localStorage.setItem("userData", res.userData)
+          }
+        })
+    }
+    
+  }, [])
 
   const handleMakeRequest = (courseId: string, userEmail: string) => {
     const token = localStorage.getItem("authToken")
 
     if (token) {
-      createRequest(token, courseId, userEmail)
+      return createRequest(token, courseId, userEmail)
     }
+  }
+
+  const handleInsciption = (id: string) => {
+    const url = getUrl(id)
+    console.log("ID: ", id);
+    console.log(user.email)
+    handleMakeRequest(id, user.email)
+    ?.then(res => {
+      console.log(res?.status);
+      
+      if (res?.status === 200) {
+        window.location.href=url 
+      }
+    }) 
   }
 
   const EnabledButton = ( props: any ) => {
 
-    const url = getUrl( props.id )
-
     return (
-      <Link href={`${
-        props.id === urls[0].id
-          ? urls[0].url
-            : props.id === urls[1].id
-              ? urls[0].url
-                : "#"
-      }`}>
-        <button onClick={() => {
-          getUrl(props.id)
-          handleMakeRequest(props.id, userData.email)
-        }
-        } className="text-white bg-yellow-500 py-4 px-6 rounded-md sm:block">
+        <button onClick={() => handleInsciption(props.id)}
+        className="text-white bg-yellow-500 py-4 px-6 rounded-md sm:block">
           INSCRIBIRSE
         </button>
-      </Link>
     )
   }
 
-  const DisabledButton = ( props: any ) => {
+  const DisabledButton = () => {
     
     return (
-      <Link href="">
         <button disabled className="text-white bg-zinc-500 py-4 px-6 rounded-md sm:block">
           NO DISPONIBLE
         </button>
-      </Link>
     )
+  }
+
+  const SuccessButton = () => {
+    
+    return (
+        <button disabled className="text-white bg-green-500 py-4 px-6 rounded-md sm:block">
+          INSCRITO
+        </button>
+    )
+  }
+
+  const DoneButton = () => {
+    
+    return (
+        <button disabled className="text-white bg-green-500 py-4 px-6 rounded-md sm:block">
+          REALIZADO
+        </button>
+    )
+  }
+
+  const buttonRender = (course: any) => {
+    
+    if (!user) {
+      return <DisabledButton />
+    } else if (user.current_courses.includes(course._id)) {
+      return <SuccessButton />
+    } else if (user.courses_completed.includes(course._id)) {
+      return <DoneButton />
+    } else if (user.courses_completed.includes(course.requirements)) {
+      return <EnabledButton id={course._id} />
+    } else if (!course.requirements.length) {
+      return <EnabledButton id={course._id} />
+    } else {
+      return <DisabledButton />
+    }
   }
 
 
@@ -108,7 +166,10 @@ const CoursesTable = () => {
             <h5 className="text-sm text-start font-medium uppercase xsm:text-base">
               Curso
             </h5>
-          </th> 
+          </th>
+          <th className="flex items-center justify-center">
+            <button onClick={() => refetchData(refetch, user.email, setUser)} className="bg-zinc-400 text-md rounded-full px-4 text-white">Recargar</button>
+          </th>
         </thead>
         
         {
@@ -140,33 +201,7 @@ const CoursesTable = () => {
                       </p>
                     <td className="col-span-1 my-auto">
                       {
-                        
-                        !user
-
-                        ?
-
-                        <DisabledButton course={ course } />
-
-                        :
-
-                        !course.requirements.length 
-                        && !user.courses_completed.includes(course._id)
-
-                        ?
-
-                        <EnabledButton id={ course._id } />
-
-                        :
-
-                        user.courses_completed.includes(course.requirements)
-
-                        ?
-
-                        <EnabledButton id={ course._id } />
-
-                        :
-
-                        <DisabledButton id={ course._id } />
+                        buttonRender(course)
                       }
                     </td>
                   

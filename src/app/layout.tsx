@@ -29,8 +29,8 @@ export default function RootLayout({
       return await getUserData(token, email)
         .then(res => {
           if (res?.status === 200) {
-            localStorage.setItem("userData", JSON.stringify(res.userData))
-            setUser(res.userData)
+            localStorage.setItem("userData", res.userData)
+            setUser(JSON.parse(res.userData))
             return true
           } else {
             return false

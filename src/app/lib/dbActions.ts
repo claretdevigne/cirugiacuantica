@@ -265,7 +265,7 @@ export const getUserData = async (token: string, email: string) => {
 
             return {
                 status: 200,
-                userData: userData
+                userData: JSON.stringify(userData)
             }
 
         } 
@@ -461,7 +461,7 @@ export const createRequest = async (token: string, courseId: string, userEmail: 
         
         if (requestRespose) {
             return {
-                status: 404
+                status: 200
             }
         }
 
@@ -545,7 +545,10 @@ export const updateUser = async (token: string, user: any) => {
         const id = new ObjectId(String(user._id))
 
         const added = await connection.updateOne({ _id: id }, { $set: {
-            courses_completed: user.current_courses,
+            courses_completed: [
+                ...user.courses_completed,
+                ...user.current_courses
+            ],
             current_courses: []
         } })        
 

@@ -29,9 +29,10 @@ const SignIn: React.FC = () => {
             getUserData(res.token, userEmailForm)
               .then(res => {
                 if (res?.status === 200) {
-                  localStorage.setItem("userData", JSON.stringify(res.userData))
-                  setUser(res.userData)
-                  if (res.userData.admin) {
+                  localStorage.setItem("userData", res.userData)
+                  const parsedData = JSON.parse(res.userData)
+                  setUser(parsedData)
+                  if (parsedData.admin) {
                     router.push("/admin/dashboard")
                   } else {
                     router.push("/")
