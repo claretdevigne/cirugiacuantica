@@ -58,7 +58,7 @@ const TableStudents: React.FC = () => {
     let counter = 0
     if (!isLoading) {
       data.map((course: any) => {
-        if (course.current_courses.length === 0) {
+        if (course.current_courses.length) {
           counter++
         }
       })

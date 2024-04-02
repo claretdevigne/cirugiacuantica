@@ -22,7 +22,7 @@ export default function RootLayout({
   const handleLoading = () => {
     setTimeout(() => {
       setLoading(false)
-    }, 400)
+    }, 200)
   }
 
   const getData = async (token: string, email: string) => {

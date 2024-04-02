@@ -8,12 +8,13 @@ import { loadingStore, userStore } from "@/reducers/store";
 
 const SignIn: React.FC = () => {
 
-  const [clean, setClean] = useState(true)
-  const { setEmail, user, setUser } = userStore()
+  const [clean, setClean] = useState("")
+  const { setEmail, setUser } = userStore()
   const router = useRouter()
 
   const handleSubmit = (e: any) => {
     e.preventDefault()
+    setClean("")
 
     const userEmailForm = e.target.email.value
     const userPassForm = e.target.password.value
@@ -37,10 +38,12 @@ const SignIn: React.FC = () => {
                   }
                 }
               })
+          } else {
+            setClean("UNAUTHORED")
           }
         })
     } else {
-      setClean(false)
+      setClean("UNCOMPLETED")
     }
   }
 
@@ -137,7 +140,14 @@ const SignIn: React.FC = () => {
                       </svg>
                     </span>
                   </div>
-                  <p className={`${!clean ? "" : "hidden"} text-danger pt-3`}>Usuario y/o contraseña invalida. Por favor intente de nuevo</p>
+                  <p className={`${clean !== "" ? "" : "hidden"} text-danger pt-3`}>
+                    {
+
+                      clean === "UNAUTHORED"
+                        ? "Usuario y/o contraseña invalida. Por favor intente de nuevo"
+                          : "Por favor complete todos los campos"
+                    }
+                  </p>
                 </div>
 
                 <div className="mb-5 font-bold text-xl">
