@@ -7,7 +7,7 @@ import { randomUUID } from "crypto"
 import { ObjectId } from "mongodb"
 
 const { MongoClient } = require("mongodb")
-const MD_URI = "mongodb+srv://claretdevigne:c14r37dv@cluster0.gcoddci.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+const MD_URI = "mongodb+srv://cirugiascuanticasapp:cirugiascuanticasapp@cluster0.hxp0sie.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 const dbName = "cirugiascuanticas" 
 const usersCollectionName = "users"
 const sessionsCollectionName = "sessions"
@@ -38,6 +38,11 @@ export const validateCredentials = async (email: string, password: string) => {
         const connection = await connectDB(dbName, usersCollectionName)
 
         const user = await connection.find({ email: email }).toArray()
+
+        console.log(connection ? "Conectado" : "No es posible conectar");
+        console.log(user);
+        
+        
 
         if (!user.length) {
             
