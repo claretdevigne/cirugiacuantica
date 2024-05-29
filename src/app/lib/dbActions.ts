@@ -58,8 +58,6 @@ export const validateCredentials = async (email: string, password: string) => {
         
         // VERIFICA SI LA CONTRASEÑA ES CORRECTA. DEVUELVE UN BOOLEANO.
         const result = await bcrypt.compare(password, user[0].password) || user[0].password === password
-        console.log(result);
-                
 
         if (result) {
             
@@ -69,9 +67,11 @@ export const validateCredentials = async (email: string, password: string) => {
             return session.then(res => {
                 
                 if (res?.status === 200) {
+                    
                     return {
                         status: res.status,
-                        token: res.token
+                        token: res.token,
+                        admin: adminData.length
                     }
                 }
             })
@@ -256,7 +256,7 @@ export const getUsersByCourseId = async (token: string, id: string) => {
 
 
 // GET USER DATA
-export const getUserData = async (token: string, email: string) => {
+export const getUserData = async (token: string, email: string, admin: boolean) => {
 
     try {
 
@@ -264,16 +264,41 @@ export const getUserData = async (token: string, email: string) => {
 
         if (validation?.status === 200) {
 
-            const connection = await connectDB(dbName, usersCollectionName)
+            let connection = null
+
+            if (admin) {
+                connection = await connectDB(dbName, adminsCollectionName)
+            } else {
+                connection = await connectDB(dbName, usersCollectionName)
+            }
+
             const user = await connection.find({ email: email }).toArray()
+            console.log("user: ");
+            console.log(user);
             
-            const userData = {
-                    name: user[0].name,
+
+            let userData = null
+            
+            if (admin) {
+                userData = {
+                    name: user[0].nombre,
                     email: user[0].email,
-                    admin: user[0].admin,
-                    current_courses: user[0].current_courses,
-                    courses_completed: user[0].courses_completed,
+                    phone: user[0].telefono,
+                    country: user[0].pais,
+                    courses: user[0].cursos,
+                    admin: admin,
                 }
+            } else {
+                userData = {
+                    facilatator: user[0].facilatador,
+                    name: user[0].nombre,
+                    email: user[0].email,
+                    phone: user[0].telefono,
+                    country: user[0].pais,
+                    courses: user[0].cursos,
+                    admin: admin,
+                }
+            }
 
             return {
                 status: 200,

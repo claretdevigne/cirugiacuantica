@@ -26,7 +26,7 @@ const SignIn: React.FC = () => {
           if(res.status === 200) {
             localStorage.setItem("authToken", res.token)
             setEmail(userEmailForm)
-            getUserData(res.token, userEmailForm)
+            getUserData(res.token, userEmailForm, res.admin)
               .then(res => {
                 if (res?.status === 200) {
                   localStorage.setItem("userData", res.userData)
