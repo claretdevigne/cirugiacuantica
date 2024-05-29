@@ -13,6 +13,7 @@ const usersCollectionName = "users"
 const sessionsCollectionName = "sessions"
 const requestsCollectionName = "requests"
 const coursesCollectionName = "courses"
+const adminsCollectionName = "admins"
 const client = new MongoClient(MD_URI)
 
 const connectDB = async (dbName: string, colName: string) => {
@@ -35,25 +36,31 @@ const connectDB = async (dbName: string, colName: string) => {
 export const validateCredentials = async (email: string, password: string) => {
 
     try {
-        const connection = await connectDB(dbName, usersCollectionName)
+        const usersConnection = await connectDB(dbName, usersCollectionName)
+        const adminsConnection = await connectDB(dbName, adminsCollectionName)
 
-        const user = await connection.find({ email: email }).toArray()
+        const userData = await usersConnection.find({ email: email }).toArray()
+        const adminData = await adminsConnection.find({ email: email }).toArray()
+        let user = null
 
-        console.log(connection ? "Conectado" : "No es posible conectar");
-        console.log(user);
-        
-        
-
-        if (!user.length) {
+        if (!userData.length && !adminData.length) {
             
             return {
                 status: 404
             }
         }
+
+        if (userData.length) {
+            user = userData
+        } else if (adminData.length) {
+            user = adminData
+        }
         
         // VERIFICA SI LA CONTRASEÑA ES CORRECTA. DEVUELVE UN BOOLEANO.
-        const result = await bcrypt.compare(password, user[0].password)        
-        
+        const result = await bcrypt.compare(password, user[0].password) || user[0].password === password
+        console.log(result);
+                
+
         if (result) {
             
             // CREA LA SESIÓN EN LA BASE DE DATOS.
