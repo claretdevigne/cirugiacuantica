@@ -273,9 +273,6 @@ export const getUserData = async (token: string, email: string, admin: boolean) 
             }
 
             const user = await connection.find({ email: email }).toArray()
-            console.log("user: ");
-            console.log(user);
-            
 
             let userData = null
             
