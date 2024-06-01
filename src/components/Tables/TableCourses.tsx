@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
+import { Query, useQuery } from '@tanstack/react-query';
+import { getCourses } from '@/app/lib/dbActions';
 
-const courseData = [
-  {
-    _id: "cirugias_cuanticas_nivel_1",
-    name: "Cirugias cuanticas nivel 1",
-    estatus: true,
-    estudiantes: ["Estudiante 1", "Estudiante 2"],
-    facilitadores: ["Facilitador 1", "Facilitador 2"],
-  },
-  // Puedes agregar más cursos aquí
-];
+const fetchCourses = async () => {
+  const response = await getCourses()
+  console.log(response)
+};
+
+
 
 const TableOne = () => {
+  const { isLoading, data: courses, refetch } = useQuery({queryKey: ["courses"], queryFn: fetchCourses});
   const [expandedCourse, setExpandedCourse] = useState(null);
   const [editCourse, setEditCourse] = useState(null);
   const [courseName, setCourseName] = useState('');
@@ -19,34 +18,42 @@ const TableOne = () => {
   const [deleteCourse, setDeleteCourse] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState('');
 
-  const toggleDetails = (courseId: any) => {
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  const toggleDetails = (courseId) => {
     setExpandedCourse(expandedCourse === courseId ? null : courseId);
   };
 
-  const startEdit = (course: any) => {
+  const startEdit = (course) => {
     setEditCourse(course._id);
     setCourseName(course.name);
     setCourseStatus(course.estatus);
   };
 
-  const saveEdit = (courseId: any) => {
+  const saveEdit = async (courseId) => {
     // Aquí puedes agregar la lógica para guardar los cambios en el curso
     // Ej. Actualizar el estado local o hacer una petición a la API
     setEditCourse(null);
+    await refetch();
   };
 
-  const openDeleteModal = (course: any) => {
+  const openDeleteModal = (course) => {
     setDeleteCourse(course);
     setConfirmDelete('');
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (deleteCourse.name === confirmDelete) {
       // Aquí puedes agregar la lógica para eliminar el curso
       // Ej. Actualizar el estado local o hacer una petición a la API
-      const index = courseData.findIndex(course => course._id === deleteCourse._id);
-      courseData.splice(index, 1);
+      await fetch(`/api/courses/${deleteCourse._id}`, {
+        method: 'DELETE',
+      });
+
       setDeleteCourse(null);
+      await refetch();
     }
   };
 
@@ -76,7 +83,7 @@ const TableOne = () => {
           </div>
         </div>
 
-        {courseData.map((course) => (
+        {/* {courses.map((course) => (
           <div key={course._id}>
             <div className={`grid grid-cols-4 border-b border-stroke dark:border-strokedark`}>
               <div className="flex items-center gap-3 p-2.5 xl:p-5">
@@ -149,7 +156,7 @@ const TableOne = () => {
                     </button>
                     <button
                       onClick={() => openDeleteModal(course)}
-                      className="px-4 py-2 bg-red text-white rounded"
+                      className="px-4 py-2 bg-red-500 text-white rounded"
                     >
                       Eliminar
                     </button>
@@ -158,14 +165,14 @@ const TableOne = () => {
               </div>
             )}
           </div>
-        ))}
+        ))} */}
       </div>
 
       {deleteCourse && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded shadow-lg dark:bg-gray-800">
             <h3 className="text-lg font-medium mb-4">Eliminar curso</h3>
-            <p className="mb-4">Para confirmar la eliminación, por favor ingresa el nombre del curso:</p>
+            <p className="mb-4">Escriba <strong>{deleteCourse.name}</strong> para eliminar el curso.</p>
             <input
               type="text"
               value={confirmDelete}
@@ -181,7 +188,7 @@ const TableOne = () => {
               </button>
               <button
                 onClick={handleDelete}
-                className="px-4 py-2 bg-red text-white rounded"
+                className="px-4 py-2 bg-red-500 text-white rounded"
               >
                 Confirmar
               </button>

@@ -596,3 +596,20 @@ export const updateUser = async (token: string, user: any) => {
         status: 401
     }
 }}
+
+export const getCourses = async () => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, "courses")
+    const courses = await connection.find({}).toArray();
+    const data = JSON.stringify(courses)
+    console.log(courses)
+        
+    return data
+    
+
+}
+
+
+
+
