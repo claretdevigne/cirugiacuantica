@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
-import { Query, useQuery } from '@tanstack/react-query';
-import { getCourses } from '@/app/lib/dbActions';
+import { Query, useQuery, useMutation } from '@tanstack/react-query';
+import { getCourses, addCourse, deleteCourses, editCourses } from '@/app/lib/dbActions';
 
 const fetchCourses = async () => {
   const response = await getCourses()
-  console.log(response)
+  return JSON.parse(response)
 };
 
-
+const CourseType = {
+  name: String,
+  status: Boolean
+}
 
 const TableOne = () => {
   const { isLoading, data: courses, refetch } = useQuery({queryKey: ["courses"], queryFn: fetchCourses});
@@ -17,44 +20,47 @@ const TableOne = () => {
   const [courseStatus, setCourseStatus] = useState(true);
   const [deleteCourse, setDeleteCourse] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState('');
+  const [newCourseName, setNewCourseName] = useState('');
+  const [newCourseStatus, setNewCourseStatus] = useState(true);
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
-  const toggleDetails = (courseId) => {
+  const toggleDetails = (courseId: any) => {
     setExpandedCourse(expandedCourse === courseId ? null : courseId);
   };
 
-  const startEdit = (course) => {
+  const startEdit = (course: any) => {
     setEditCourse(course._id);
     setCourseName(course.name);
     setCourseStatus(course.estatus);
   };
 
-  const saveEdit = async (courseId) => {
+  const saveEdit = async (courseId: any) => {
     // Aquí puedes agregar la lógica para guardar los cambios en el curso
     // Ej. Actualizar el estado local o hacer una petición a la API
     setEditCourse(null);
+    editCourses(courseId, courseName, courseStatus);
     await refetch();
   };
 
-  const openDeleteModal = (course) => {
+  const openDeleteModal = (course: any) => {
     setDeleteCourse(course);
     setConfirmDelete('');
   };
 
   const handleDelete = async () => {
-    if (deleteCourse.name === confirmDelete) {
-      // Aquí puedes agregar la lógica para eliminar el curso
-      // Ej. Actualizar el estado local o hacer una petición a la API
-      await fetch(`/api/courses/${deleteCourse._id}`, {
-        method: 'DELETE',
-      });
-
-      setDeleteCourse(null);
+    if (deleteCourse !== undefined && deleteCourse !== null && deleteCourse.name === confirmDelete) {
+      deleteCourses(deleteCourse._id)
+      setDeleteCourse(null)
       await refetch();
     }
+  };
+
+  const handleAddCourse = async () => {
+    addCourse(newCourseName, newCourseStatus)
+    refetch()
   };
 
   return (
@@ -83,7 +89,13 @@ const TableOne = () => {
           </div>
         </div>
 
-        {/* {courses.map((course) => (
+        {
+          courses === undefined
+          ?
+          ""
+          :
+        
+        courses.map((course) => (
           <div key={course._id}>
             <div className={`grid grid-cols-4 border-b border-stroke dark:border-strokedark`}>
               <div className="flex items-center gap-3 p-2.5 xl:p-5">
@@ -129,13 +141,32 @@ const TableOne = () => {
               <div className="bg-gray-100 p-4 dark:bg-gray-800">
                 <h5 className="text-sm font-medium">Estudiantes:</h5>
                 <ul className="list-disc list-inside">
-                  {course.estudiantes.map((student, index) => (
+                  {
+                    course.estudiantes.length == 0 
+
+                    ?
+                    
+                    "No hay estudiantes activos"
+                  
+                    :
+
+                  course.estudiantes.map((student: any, index: number) => (
                     <li key={index}>{student}</li>
                   ))}
                 </ul>
                 <h5 className="text-sm font-medium mt-4">Facilitadores:</h5>
                 <ul className="list-disc list-inside">
-                  {course.facilitadores.map((facilitator, index) => (
+                  {
+                  
+                    course.facilitadores.length == 0
+
+                    ?
+
+                    "No hay facilitadores registrados para ofrecer este curso"
+
+                    : 
+
+                  course.facilitadores.map((facilitator: any, index: number) => (
                     <li key={index}>{facilitator}</li>
                   ))}
                 </ul>
@@ -156,7 +187,7 @@ const TableOne = () => {
                     </button>
                     <button
                       onClick={() => openDeleteModal(course)}
-                      className="px-4 py-2 bg-red-500 text-white rounded"
+                      className="px-4 py-2 bg-red text-white rounded"
                     >
                       Eliminar
                     </button>
@@ -165,7 +196,34 @@ const TableOne = () => {
               </div>
             )}
           </div>
-        ))} */}
+        ))}
+
+        <div className="mt-6">
+          <h3 className="text-lg font-medium">Agregar nuevo curso</h3>
+          <div className="grid grid-cols-2 gap-4 mt-4">
+            <input
+              type="text"
+              placeholder="Nombre del curso"
+              value={newCourseName}
+              onChange={(e) => setNewCourseName(e.target.value)}
+              className="border rounded p-2"
+            />
+            <select
+              value={newCourseStatus}
+              onChange={(e) => setNewCourseStatus(e.target.value === 'true')}
+              className="border rounded p-2"
+            >
+              <option value={true}>Activo</option>
+              <option value={false}>Inactivo</option>
+            </select>
+          </div>
+          <button
+            onClick={handleAddCourse}
+            className="mt-4 px-4 py-2 bg-green-500 text-white rounded"
+          >
+            Agregar curso
+          </button>
+        </div>
       </div>
 
       {deleteCourse && (
@@ -188,7 +246,7 @@ const TableOne = () => {
               </button>
               <button
                 onClick={handleDelete}
-                className="px-4 py-2 bg-red-500 text-white rounded"
+                className="px-4 py-2 bg-red text-white rounded"
               >
                 Confirmar
               </button>
