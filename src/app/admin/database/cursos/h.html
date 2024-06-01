@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tabla de Cursos</title>
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+    .details {
+        display: none;
+    }
+    input[type="text"] {
+        width: 100%;
+    }
+</style>
+</head>
+<body>
+
+<h2>Tabla de Cursos</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Nombre del Curso</th>
+            <th>Estatus</th>
+            <th>Estudiantes</th>
+            <th>Facilitadores</th>
+            <th>Detalles</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td contenteditable="true">Curso 1</td>
+            <td contenteditable="true">Activo</td>
+            <td contenteditable="true">25</td>
+            <td contenteditable="true">John Doe, Jane Smith</td>
+            <td><button onclick="toggleDetails(1)">Ver Detalles</button></td>
+        </tr>
+        <tr class="details" id="details1">
+            <td colspan="5">
+                <h3>Detalles del Curso 1</h3>
+                <p>Lista de estudiantes: [Lista de estudiantes aquí]</p>
+                <p>Lista de facilitadores: [Lista de facilitadores aquí]</p>
+            </td>
+        </tr>
+        <tr>
+            <td contenteditable="true">Curso 2</td>
+            <td contenteditable="true">En espera</td>
+            <td contenteditable="true">15</td>
+            <td contenteditable="true">Emily Johnson, Mark Wilson</td>
+            <td><button onclick="toggleDetails(2)">Ver Detalles</button></td>
+        </tr>
+        <tr class="details" id="details2">
+            <td colspan="5">
+                <h3>Detalles del Curso 2</h3>
+                <p>Lista de estudiantes: [Lista de estudiantes aquí]</p>
+                <p>Lista de facilitadores: [Lista de facilitadores aquí]</p>
+            </td>
+        </tr>
+        <!-- Agregar más filas según sea necesario -->
+    </tbody>
+</table>
+
+<script>
+    function toggleDetails(id) {
+        var detailsRow = document.getElementById('details' + id);
+        if (detailsRow.style.display === 'none') {
+            detailsRow.style.display = 'table-row';
+        } else {
+            detailsRow.style.display = 'none';
+        }
+    }
+</script>
+
+</body>
+</html>
