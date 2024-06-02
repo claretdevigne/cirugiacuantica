@@ -597,6 +597,8 @@ export const updateUser = async (token: string, user: any) => {
     }
 }}
 
+// OBTENER CURSOS PARA BASE DE DATOSs
+
 export const getCourses = async () => {
 
     const uri = MD_URI;
@@ -638,6 +640,57 @@ export const deleteCourses = async (id: string) => {
 }
 
 export const editCourses = async (id: string, name: string, estatus: string) => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, "courses")
+
+    const updated = await connection.updateOne({ _id: id }, {  $set: { name: name, estatus: estatus } })
+}
+
+
+// OBTENER ESTUDIANTES PARA BASE DE DATOS
+
+export const getStudents = async () => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, usersCollectionName)
+    const courses = await connection.find({}).toArray();
+    const data = JSON.stringify(courses)
+    return data
+    
+
+}
+
+export const addStudent = async (name: string, active: string) => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, "courses")
+    let course = {
+        _id: name.split(" ").join("_").toLowerCase(),
+        name: name,
+        estatus: active,
+        estudiantes: [],
+        facilitadores: []
+    }
+
+    const courseAdded = await connection.insertMany([course])
+    
+
+}
+
+export const deleteStudent = async (id: string) => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, "courses")
+
+    console.log(id);
+    
+    const deleted = await connection.deleteOne({ _id: id });
+    
+
+}
+
+export const editStudent = async (id: string, name: string, estatus: string) => {
 
     const uri = MD_URI;
     const connection = await connectDB(dbName, "courses")
