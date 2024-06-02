@@ -608,7 +608,7 @@ export const getCourses = async () => {
 
 }
 
-export const addCourse = async (name: string, active: boolean) => {
+export const addCourse = async (name: string, active: string) => {
 
     const uri = MD_URI;
     const connection = await connectDB(dbName, "courses")
@@ -637,13 +637,10 @@ export const deleteCourses = async (id: string) => {
 
 }
 
-export const editCourses = async (id: string, name: string, estatus: boolean) => {
+export const editCourses = async (id: string, name: string, estatus: string) => {
 
     const uri = MD_URI;
     const connection = await connectDB(dbName, "courses")
 
     const updated = await connection.updateOne({ _id: id }, {  $set: { name: name, estatus: estatus } })
-
-    
-
 }

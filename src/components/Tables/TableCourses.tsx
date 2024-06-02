@@ -2,26 +2,29 @@ import React, { useState } from 'react';
 import { Query, useQuery, useMutation } from '@tanstack/react-query';
 import { getCourses, addCourse, deleteCourses, editCourses } from '@/app/lib/dbActions';
 
+type Course = {
+  _id: string,
+  name: string,
+  estatus: boolean,
+  estudiantes: Array<string>,
+  facilitadores: Array<string>
+}
+
 const fetchCourses = async () => {
   const response = await getCourses()
   return JSON.parse(response)
 };
-
-const CourseType = {
-  name: String,
-  status: Boolean
-}
 
 const TableOne = () => {
   const { isLoading, data: courses, refetch } = useQuery({queryKey: ["courses"], queryFn: fetchCourses});
   const [expandedCourse, setExpandedCourse] = useState(null);
   const [editCourse, setEditCourse] = useState(null);
   const [courseName, setCourseName] = useState('');
-  const [courseStatus, setCourseStatus] = useState(true);
-  const [deleteCourse, setDeleteCourse] = useState(null);
+  const [courseStatus, setCourseStatus] = useState<string>("true");
+  const [deleteCourse, setDeleteCourse] = useState<Course | null>(null);
   const [confirmDelete, setConfirmDelete] = useState('');
   const [newCourseName, setNewCourseName] = useState('');
-  const [newCourseStatus, setNewCourseStatus] = useState(true);
+  const [newCourseStatus, setNewCourseStatus] = useState<string>("true");
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -95,7 +98,7 @@ const TableOne = () => {
           ""
           :
         
-        courses.map((course) => (
+        courses.map((course: Course) => (
           <div key={course._id}>
             <div className={`grid grid-cols-4 border-b border-stroke dark:border-strokedark`}>
               <div className="flex items-center gap-3 p-2.5 xl:p-5">
@@ -114,11 +117,11 @@ const TableOne = () => {
                 {editCourse === course._id ? (
                   <select
                     value={courseStatus}
-                    onChange={(e) => setCourseStatus(e.target.value === 'true')}
+                    onChange={(e) => setCourseStatus(e.target.value)}
                     className="border rounded p-2"
                   >
-                    <option value={true}>Activo</option>
-                    <option value={false}>Inactivo</option>
+                    <option value={"true"}>Activo</option>
+                    <option value={"false"}>Inactivo</option>
                   </select>
                 ) : (
                   <p className="text-black dark:text-white">{course.estatus ? "Activo" : "Inactivo"}</p>
@@ -210,11 +213,11 @@ const TableOne = () => {
             />
             <select
               value={newCourseStatus}
-              onChange={(e) => setNewCourseStatus(e.target.value === 'true')}
+              onChange={(e) => setNewCourseStatus(e.target.value)}
               className="border rounded p-2"
             >
-              <option value={true}>Activo</option>
-              <option value={false}>Inactivo</option>
+              <option value={"true"}>Activo</option>
+              <option value={"false"}>Inactivo</option>
             </select>
           </div>
           <button
