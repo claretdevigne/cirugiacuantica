@@ -17,7 +17,7 @@ export default function RootLayout({
   const [loading, setLoading] = useState(true)
   const queryClient = new QueryClient()
   const route = useRouter()
-  const { setEmail, setUser, email, user} = userStore()
+  const { setEmail, setUser, email, setAdmin, user} = userStore()
 
   const handleLoading = () => {
     setTimeout(() => {
@@ -25,8 +25,8 @@ export default function RootLayout({
     }, 200)
   }
 
-  const getData = async (token: string, email: string) => {
-      return await getUserData(token, email)
+  const getData = async (token: string, email: string, admin: boolean) => {
+      return await getUserData(token, email, admin)
         .then(res => {
           if (res?.status === 200) {
             localStorage.setItem("userData", res.userData)
@@ -68,13 +68,14 @@ export default function RootLayout({
           .then(res => {
             if (res?.status === 200) {
               setEmail(res.email)
+              setAdmin(res.admin)
               const userData = localStorage.getItem("userData")
               if (userData) {
                 const data = JSON.parse(userData)
                 setUser(data)
                 redirect(true, data.admin)
               } else {
-                getData(token, email)
+                getData(token, email, res.admin)
                 .then(res => {
                   if (res.status) {
                     redirect(true, res.admin)

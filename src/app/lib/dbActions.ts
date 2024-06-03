@@ -98,7 +98,8 @@ export const validateToken = async (token: string) => {
             if (session[0].expiration_date > currentDate) {
                 return {
                     status: 200,
-                    email: session[0].email
+                    email: session[0].email,
+                    admin: session[0].admin
                 }
             } else {
                 removeSession(token)

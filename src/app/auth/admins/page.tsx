@@ -68,10 +68,8 @@ const SignIn: React.FC = () => {
           <div className="w-full border-stroke dark:border-strokedark xl:w-1/2 xl:border-l-2">
             <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
               <h2 className="mb-1.5 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
-                ¡Bienvenid@!
+                Panel de administradores
               </h2>
-              <span className="mb-9 block font-medium">Gracias por estar aquí</span>
-
               <form onSubmit={handleSubmit}>
                 <div className="mb-4">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
@@ -159,18 +157,9 @@ const SignIn: React.FC = () => {
                   />
                 </div>
 
-                <Link href="/auth/admins" className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50">
-                  ¿Eres facilitador? Ingresa aquí
+                <Link href="/auth/signin" className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50">
+                  Si no eres facilitador haz clic aquí
                 </Link>
-
-                <div className="mt-6 text-center">
-                  <p>
-                    ¿Aún no tienes cuenta?{" "}
-                    <Link href="/auth/signup" className="text-yellow-600">
-                      Registrate
-                    </Link>
-                  </p>
-                </div>
               </form>
             </div>
           </div>
