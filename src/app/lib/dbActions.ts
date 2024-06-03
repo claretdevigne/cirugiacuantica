@@ -768,7 +768,6 @@ export const getMyStudents = async (name: string) => {
     const regex = new RegExp(words, 'i'); // 'i' para hacer la búsqueda sin distinguir entre mayúsculas y minúsculas
     const courses = await connection.find({ facilitador: regex }).toArray();
     const data = JSON.stringify(courses)
-    
     return data
     
 
