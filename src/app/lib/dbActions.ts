@@ -690,10 +690,20 @@ export const deleteStudent = async (id: string) => {
 
 }
 
-export const editStudent = async (id: string, name: string, estatus: string) => {
+export const updateStudent = async (user: any) => {
 
     const uri = MD_URI;
-    const connection = await connectDB(dbName, "courses")
+    const connection = await connectDB(dbName, "users")
 
-    const updated = await connection.updateOne({ _id: id }, {  $set: { name: name, estatus: estatus } })
+    const updated = await connection.updateOne({ _id: user._id }, 
+        {  
+            $set: 
+                { 
+                    facilitador: user.facilitador,
+                    nombre: user.nombre,
+                    email: user.email,
+                    telefono: user.telefono,
+                    pais: user.pais,
+                    cursos: user.cursos, 
+                } })
 }
