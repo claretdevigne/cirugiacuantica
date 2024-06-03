@@ -707,3 +707,116 @@ export const updateStudent = async (user: any) => {
                     cursos: user.cursos, 
                 } })
 }
+
+// OBTENER MIS CURSOS PARA BASE DE DATOS
+
+export const getMisCursos = async (name: string) => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, "courses")
+    const courses = await connection.find({ facilitadores: {$in: [name]}}).toArray();
+    const data = JSON.stringify(courses)
+    return data
+    
+
+}
+
+export const addMisCursos = async (name: string, active: string) => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, "courses")
+    let course = {
+        _id: name.split(" ").join("_").toLowerCase(),
+        name: name,
+        estatus: active,
+        estudiantes: [],
+        facilitadores: []
+    }
+
+    const courseAdded = await connection.insertMany([course])
+    
+
+}
+
+export const deleteMisCursos = async (id: string) => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, "courses")
+
+    console.log(id);
+    
+    const deleted = await connection.deleteOne({ _id: id });
+    
+
+}
+
+export const editMisCursos = async (id: string, name: string, estatus: string) => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, "courses")
+
+    const updated = await connection.updateOne({ _id: id }, {  $set: { name: name, estatus: estatus } })
+}
+
+// OBTENER MIS ESTUDIANTES PARA BASE DE DATOS
+
+export const getMyStudents = async (name: string) => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, usersCollectionName)
+    const words = name.split(' ').map(word => `\\b${word}\\b`).join('|');
+    const regex = new RegExp(words, 'i'); // 'i' para hacer la búsqueda sin distinguir entre mayúsculas y minúsculas
+    const courses = await connection.find({ facilitador: regex }).toArray();
+    const data = JSON.stringify(courses)
+    
+    return data
+    
+
+}
+
+export const addMyStudents = async (name: string, active: string) => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, "courses")
+    let course = {
+        _id: name.split(" ").join("_").toLowerCase(),
+        name: name,
+        estatus: active,
+        estudiantes: [],
+        facilitadores: []
+    }
+
+    const courseAdded = await connection.insertMany([course])
+    
+
+}
+
+export const deleteMyStudents = async (id: string) => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, "courses")
+
+    console.log(id);
+    
+    const deleted = await connection.deleteOne({ _id: id });
+    
+
+}
+
+export const updateMyStudents = async (user: any) => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, "users")
+
+    const updated = await connection.updateOne({ _id: user._id }, 
+        {  
+            $set: 
+                { 
+                    facilitador: user.facilitador,
+                    nombre: user.nombre,
+                    email: user.email,
+                    telefono: user.telefono,
+                    pais: user.pais,
+                    cursos: user.cursos, 
+                } })
+}

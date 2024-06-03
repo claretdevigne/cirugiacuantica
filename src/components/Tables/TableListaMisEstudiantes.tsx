@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { getStudents, updateStudent } from '@/app/lib/dbActions';
+import { getMyStudents, updateMyStudents } from '@/app/lib/dbActions';
+import { userStore } from '@/reducers/store';
 
 type Student = {
   _id: string,
@@ -18,7 +19,8 @@ type Student = {
 }
 
 const fetchStudents = async () => {
-  const response = await getStudents();
+  const { user } = userStore.getState()
+  const response = await getMyStudents(user.name);
   return JSON.parse(response);
 };
 
@@ -65,7 +67,7 @@ const TableListaEstudiantes = () => {
 
   const handleSave = async () => {
     if (editableStudent) {
-      await updateStudent(editableStudent);
+      await updateMyStudents(editableStudent);
       setEditMode(null);
       setEditableStudent(null);
       refetch();
@@ -172,7 +174,16 @@ const TableListaEstudiantes = () => {
           </div>
         </div>
 
-        {sortedStudents?.map((student: Student) => (
+        {
+          !sortedStudents.length
+          
+          ? 
+          
+          <div className='my-3'>No tiene estudiantes por el momento</div>
+          
+          :
+
+        sortedStudents?.map((student: Student) => (
           <div key={student._id}>
             <div className={`grid grid-cols-4 border-b border-stroke dark:border-strokedark`}>
               <div className="flex items-center gap-3 p-2.5 xl:p-5">
@@ -281,10 +292,10 @@ const TableListaEstudiantes = () => {
           
                   <input
                     type="text"
-                    value={editableStudent?.facilitador === null ? "" : editableStudent?.facilitador}
+                    value={editableStudent?.facilitador === null ? "" : student.facilitador}
                     onChange={(e) => handleChangeFacilitador(e.target.value)}
                     className="px-2 py-1 border rounded-md"
-                    placeholder={editableStudent?.facilitador === null ? "" : editableStudent?.facilitador}
+                    placeholder={student.facilitador === null ? "" : student.facilitador}
                   />
                 
                   :
