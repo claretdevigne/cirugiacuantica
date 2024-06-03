@@ -34,7 +34,6 @@ const TableListaEstudiantes = () => {
   const [sortField, setSortField] = useState<'nombre' | 'pais'>('nombre');
   const [searchTerm, setSearchTerm] = useState('');
   const [editableStudent, setEditableStudent] = useState<Student | null>(null);
-  const [newFacilitador, setNewFacilitador] = useState<string | null>(null)
 
   const entitleFormat = (text: string) => {
     let formatted = text[0].toLocaleUpperCase() + text.slice(1);
@@ -67,7 +66,6 @@ const TableListaEstudiantes = () => {
   const handleSave = async () => {
     if (editableStudent) {
       await updateStudent(editableStudent);
-      setNewFacilitador(null);
       setEditMode(null);
       setEditableStudent(null);
       refetch();
@@ -233,7 +231,6 @@ const TableListaEstudiantes = () => {
                     if (courseDetails.estatus === "inactivo") return null;
                     const estatus = entitleFormat(courseDetails.estatus)
                     const modalidad = courseDetails.modalidad === "ninguna" ? "Modalidad no establecida" : entitleFormat(courseDetails.modalidad)
-                    const facilitador = student.facilitador
 
                     return (
                       <div key={courseName}>
@@ -284,10 +281,10 @@ const TableListaEstudiantes = () => {
           
                   <input
                     type="text"
-                    value={editableStudent?.facilitador}
+                    value={editableStudent?.facilitador === null ? "" : student.facilitador}
                     onChange={(e) => handleChangeFacilitador(e.target.value)}
                     className="px-2 py-1 border rounded-md"
-                    placeholder={student.facilitador}
+                    placeholder={student.facilitador === null ? "" : student.facilitador}
                   />
                 
                   :

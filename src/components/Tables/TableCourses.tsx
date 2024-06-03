@@ -25,6 +25,7 @@ const TableOne = () => {
   const [confirmDelete, setConfirmDelete] = useState('');
   const [newCourseName, setNewCourseName] = useState('');
   const [newCourseStatus, setNewCourseStatus] = useState<string>("true");
+  const [searchTerm, setSearchTerm] = useState("");
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -33,6 +34,10 @@ const TableOne = () => {
   const toggleDetails = (courseId: any) => {
     setExpandedCourse(expandedCourse === courseId ? null : courseId);
   };
+
+  const filteredCourses = courses?.filter((course: Course) =>
+    course.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const startEdit = (course: any) => {
     setEditCourse(course._id);
@@ -68,6 +73,15 @@ const TableOne = () => {
 
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pb-2.5 pt-6 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+      <div className="flex justify-between items-center mb-4">
+        <input
+          type="text"
+          placeholder="Buscar por nombre"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="px-4 py-2 border rounded-md"
+        />
+      </div>
       <div className="flex flex-col">
         <div className="grid grid-cols-4 rounded-sm bg-gray-2 dark:bg-meta-4">
           <div className="p-2.5 xl:p-5">
@@ -98,7 +112,7 @@ const TableOne = () => {
           ""
           :
         
-        courses.map((course: Course) => (
+        filteredCourses.map((course: Course) => (
           <div key={course._id}>
             <div className={`grid grid-cols-4 border-b border-stroke dark:border-strokedark`}>
               <div className="flex items-center gap-3 p-2.5 xl:p-5">
