@@ -5,10 +5,10 @@ import { userStore } from '@/reducers/store';
 
 type Student = {
   _id: string,
-  facilitador: string | null,
+  facilitador: string,
   nombre: string,
   email: string,
-  telefono: number | null,
+  telefono: number | "",
   pais: string,
   cursos: Record<string, {
     modalidad: string,
@@ -35,7 +35,7 @@ const TableListaEstudiantes = () => {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [sortField, setSortField] = useState<'nombre' | 'pais'>('nombre');
   const [searchTerm, setSearchTerm] = useState('');
-  const [editableStudent, setEditableStudent] = useState<Student | null>(null);
+  const [editableStudent, setEditableStudent] = useState<Student | string>("");
 
   const entitleFormat = (text: string) => {
     let formatted = text[0].toLocaleUpperCase() + text.slice(1);
@@ -62,14 +62,14 @@ const TableListaEstudiantes = () => {
 
   const handleCancel = () => {
     setEditMode(null);
-    setEditableStudent(null);
+    setEditableStudent("");
   };
 
   const handleSave = async () => {
     if (editableStudent) {
       await updateMyStudents(editableStudent);
       setEditMode(null);
-      setEditableStudent(null);
+      setEditableStudent("");
       refetch();
     }
   };
@@ -190,7 +190,7 @@ const TableListaEstudiantes = () => {
                 {editMode === student._id ? (
                   <input
                     type="text"
-                    value={editableStudent?.nombre ?? ''}
+                    value={typeof editableStudent === "string" ? "" : editableStudent?.nombre ?? ''}
                     onChange={(e) => handleChange('nombre', e.target.value)}
                     className="px-2 py-1 border rounded-md"
                   />
@@ -202,7 +202,7 @@ const TableListaEstudiantes = () => {
                 {editMode === student._id ? (
                   <input
                     type="text"
-                    value={editableStudent?.email ?? ''}
+                    value={typeof editableStudent === "string" ? "" : editableStudent?.email ?? ''}
                     onChange={(e) => handleChange('email', e.target.value)}
                     className="px-2 py-1 border rounded-md"
                   />
@@ -214,7 +214,7 @@ const TableListaEstudiantes = () => {
                 {editMode === student._id ? (
                   <input
                     type="text"
-                    value={editableStudent?.pais ?? ''}
+                    value={typeof editableStudent === "string" ? "" : editableStudent?.pais ?? ''}
                     onChange={(e) => handleChange('pais', e.target.value)}
                     className="px-2 py-1 border rounded-md"
                   />
@@ -249,7 +249,7 @@ const TableListaEstudiantes = () => {
                           <div className='grid grid-cols-3 gap-4'>
                             <div>{formatCourseName(courseName)}</div>
                             <select
-                              value={editableStudent?.cursos[courseName].estatus}
+                              value={typeof editableStudent === "string" ? "" : editableStudent?.cursos[courseName].estatus}
                               onChange={(e) => handleChangeStatus(courseName, e.target.value)}
                               className="border rounded p-2"
                             >
@@ -259,7 +259,7 @@ const TableListaEstudiantes = () => {
                             </select>
                             
                             <select
-                              value={editableStudent?.cursos[courseName].modalidad}
+                              value={typeof editableStudent === "string" ? "" : editableStudent?.cursos[courseName].modalidad}
                               onChange={(e) => handleCourseModalidadChange(courseName, e.target.value)}
                               className="border rounded p-2"
                             >
@@ -292,7 +292,7 @@ const TableListaEstudiantes = () => {
           
                   <input
                     type="text"
-                    value={editableStudent?.facilitador === null ? "" : student.facilitador}
+                    value={typeof editableStudent === "string" ? "" : editableStudent.facilitador}
                     onChange={(e) => handleChangeFacilitador(e.target.value)}
                     className="px-2 py-1 border rounded-md"
                     placeholder={student.facilitador === null ? "" : student.facilitador}
