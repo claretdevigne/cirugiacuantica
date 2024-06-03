@@ -39,13 +39,13 @@ const getUrl = (id: string) => {
   return item.url
 }
 
-const refetchData = (refetch: Function, email: string, setUser: Function) => {
+const refetchData = (refetch: Function, email: string, setUser: Function, admin: boolean) => {
   refetch()
 
   const token = localStorage.getItem("authToken")
 
   if (token) {
-    getUserData(token, email)
+    getUserData(token, email, admin)
       .then(res => {
         if (res?.status === 200) {
           setUser(JSON.parse(res.userData))
@@ -59,13 +59,13 @@ const refetchData = (refetch: Function, email: string, setUser: Function) => {
 const CoursesTable = () => {
 
   const { isLoading, isError, data: courses = [], refetch } = useQuery({queryKey: ["courses"], queryFn: fetchCourses})
-  const { user, setUser } = userStore()
+  const { user, setUser, admin } = userStore()
 
   useEffect(() => {
     const token = localStorage.getItem("authToken")
 
     if (token) {
-      getUserData(token, user.email)
+      getUserData(token, user.email, admin)
         .then((res: any) => {
           if (res?.status === 200) {
             console.log(res.userData)
@@ -168,7 +168,7 @@ const CoursesTable = () => {
             </h5>
           </th>
           <th className="flex items-center justify-center">
-            <button onClick={() => refetchData(refetch, user.email, setUser)} className="bg-zinc-400 text-md rounded-full px-4 text-white">Recargar</button>
+            <button onClick={() => refetchData(refetch, user.email, setUser, admin)} className="bg-zinc-400 text-md rounded-full px-4 text-white">Recargar</button>
           </th>
         </thead>
         
