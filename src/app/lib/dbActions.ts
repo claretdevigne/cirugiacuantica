@@ -820,3 +820,62 @@ export const updateMyStudents = async (user: any) => {
                     cursos: user.cursos, 
                 } })
 }
+
+// OBTENER FACILITADORES PARA BASE DE DATOS
+
+export const getFacilitadores = async () => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, adminsCollectionName)
+    const courses = await connection.find({}).toArray();
+    const data = JSON.stringify(courses)
+    return data
+    
+
+}
+
+export const addFacilitadores = async (name: string, active: string) => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, adminsCollectionName)
+    let course = {
+        _id: name.split(" ").join("_").toLowerCase(),
+        name: name,
+        estatus: active,
+        estudiantes: [],
+        facilitadores: []
+    }
+
+    const courseAdded = await connection.insertMany([course])
+    
+
+}
+
+export const deleteFacilitadores = async (id: string) => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, adminsCollectionName)
+
+    console.log(id);
+    
+    const deleted = await connection.deleteOne({ _id: id });
+    
+
+}
+
+export const updateFacilitadores = async (id: string, name: string, email: string, country: string, telefono: any, courses: any) => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, adminsCollectionName)
+
+    const updated = await connection.updateOne({ _id: id }, 
+        {  
+            $set: 
+                { 
+                    nombre: name,
+                    email: email,
+                    pais: country,
+                    telefono: telefono,
+                    cursos: courses, 
+                } })
+}
