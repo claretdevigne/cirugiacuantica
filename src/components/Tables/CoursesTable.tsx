@@ -6,13 +6,17 @@ import CoursesLoader from "../common/CoursesLoader";
 import { userStore } from "@/reducers/store";
 import { useEffect, useState } from "react";
 
+type Course = {
+  "modalidad": string,
+  "estatus": string,
+}
 
 const fetchCourses = async () => {
   const token = localStorage.getItem("authToken")
     if (token) {
       return await getAllCourses(token)
       .then(res => {
-        if (typeof res.courses === "string") {          
+        if (typeof res.courses === "string") {
           return JSON.parse(res.courses)
         }
     }).catch(err => {
@@ -68,11 +72,11 @@ const CoursesTable = () => {
       getUserData(token, user.email, admin)
         .then((res: any) => {
           if (res?.status === 200) {
-            console.log(res.userData)
             localStorage.setItem("userData", res.userData)
           }
         })
     }
+    
     
   }, [])
 
@@ -86,12 +90,8 @@ const CoursesTable = () => {
 
   const handleInsciption = (id: string) => {
     const url = getUrl(id)
-    console.log("ID: ", id);
-    console.log(user.email)
     handleMakeRequest(id, user.email)
     ?.then(res => {
-      console.log(res?.status);
-      
       if (res?.status === 200) {
         window.location.href=url 
       }
@@ -130,33 +130,36 @@ const CoursesTable = () => {
     
     return (
         <button disabled className="text-white bg-green-500 py-4 px-6 rounded-md sm:block">
-          REALIZADO
+          CERTIFICADO
         </button>
     )
   }
 
-  const buttonRender = (course: any) => {
-    
-    if (!user) {
+  const buttonRender = (estatus: string) => {
+
+    // TODO: REQUERIMIENTOS
+    if (!user.courses) {
       return <DisabledButton />
-    } else if (user.current_courses.includes(course._id)) {
+    } else if (estatus === "activo"){
       return <SuccessButton />
-    } else if (user.courses_completed.includes(course._id)) {
+    } else if (estatus === "certificado") {
       return <DoneButton />
-    } else if (user.courses_completed.includes(course.requirements)) {
-      return <EnabledButton id={course._id} />
-    } else if (!course.requirements.length) {
-      return <EnabledButton id={course._id} />
-    } else {
-      return <DisabledButton />
-    }
+    } 
+    // else if (user.courses_completed.includes(course.requirements)) {
+    //   return <EnabledButton id={course._id} />
+    // } else if (!course.requirements.length) {
+    //   return <EnabledButton id={course._id} />
+    // } else {
+    //   return <DisabledButton />
+    // }
   }
 
 
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pb-2.5 pt-6 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <table className="flex flex-col">
-        <thead className="grid grid-cols-5 rounded-sm bg-gray-2 dark:bg-meta-4">
+        <thead>
+          <tr className="grid grid-cols-5 rounded-sm bg-gray-2 dark:bg-meta-4">
           <th className="col-span-1 p-2.5 xl:p-5">
             <h5 className="text-sm font-medium uppercase xsm:text-base">
               Imagen
@@ -170,6 +173,7 @@ const CoursesTable = () => {
           <th className="flex items-center justify-center">
             <button onClick={() => refetchData(refetch, user.email, setUser, admin)} className="bg-zinc-400 text-md rounded-full px-4 text-white">Recargar</button>
           </th>
+          </tr>
         </thead>
         
         {
@@ -183,7 +187,7 @@ const CoursesTable = () => {
           :
           
           <tbody>
-            {courses.map((course: COURSE, key: number) => (
+            {Object.entries(user.courses).map(([curso, value], key: number) => (
                 <tr
                 className={`grid grid-cols-5 p-4 ${
                   key === courses.length - 1
@@ -194,14 +198,14 @@ const CoursesTable = () => {
               >
                   
                     <td className="col-span-1">
-                      <Image src={course.url} alt="Poster" width={100} height={48} />
+                      {/* <Image src={} alt="Poster" width={100} height={48} /> */}
                     </td>
-                      <p className="col-span-3 my-auto">
-                        {course.name}
-                      </p>
+                      <td className="col-span-3 my-auto">
+                        {curso[0].toUpperCase() + curso.split("_").join(" ").slice(1)}
+                      </td>
                     <td className="col-span-1 my-auto">
                       {
-                        buttonRender(course)
+                        buttonRender(value.estatus)
                       }
                     </td>
                   

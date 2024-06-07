@@ -33,7 +33,7 @@ const connectDB = async (dbName: string, colName: string) => {
 
 
 // VALIDATE CREDENCIALS
-export const validateCredentials = async (email: string, password: string) => {
+export const validateCredentials = async (email: string, password: string) => {    
 
     try {
         const usersConnection = await connectDB(dbName, usersCollectionName)
@@ -57,6 +57,7 @@ export const validateCredentials = async (email: string, password: string) => {
         }
         
         // VERIFICA SI LA CONTRASEÑA ES CORRECTA. DEVUELVE UN BOOLEANO.
+        
         const result = await bcrypt.compare(password, user[0].password) || user[0].password === password
 
         if (result) {
@@ -86,10 +87,12 @@ export const validateCredentials = async (email: string, password: string) => {
 
 export const validateToken = async (token: string) => {
 
+    
+    
     try {
 
         const connection = await connectDB(dbName, sessionsCollectionName)
-        const session = await connection.find({ token: token }).toArray()        
+        const session = await connection.find({ token: token }).toArray()
         
         if (session.length) {
             
@@ -132,6 +135,8 @@ const createToken = async () => {
 // CREA UNA SESIÓN EN LA BASE DE DATOS
 const createSession = async (email: string, admin: boolean) => {
 
+    console.log("CREANDO SESSION");
+    
     try {
         const connection = await connectDB(dbName, sessionsCollectionName)
         const date = new Date()
@@ -146,8 +151,10 @@ const createSession = async (email: string, admin: boolean) => {
             creation_date: currentDate,
             expiration_date: expirationDate
         }        
+        
 
         const sessionSaved = await connection.insertMany([newSession])
+        
         
         if (sessionSaved) {
             return {
@@ -258,10 +265,12 @@ export const getUsersByCourseId = async (token: string, id: string) => {
 
 // GET USER DATA
 export const getUserData = async (token: string, email: string, admin: boolean) => {
-
+    
     try {
 
         const validation = await validateToken(token)
+        
+        
 
         if (validation?.status === 200) {
 
@@ -288,7 +297,7 @@ export const getUserData = async (token: string, email: string, admin: boolean) 
                 }
             } else {
                 userData = {
-                    facilatator: user[0].facilatador,
+                    facilitator: user[0].facilitador,
                     name: user[0].nombre,
                     email: user[0].email,
                     phone: user[0].telefono,
@@ -426,8 +435,9 @@ export const updateCourse = async (token: string, course: COURSE) => {
         const newCourse = {
             name: course.name,
             url: course.url,
-            status: course.status,
-            requirements: course.requirements
+            estatus: course.estatus,
+            estudiantes: course.estudiantes,
+            facilitadores: course.facilitadores
         }
 
         const added = await connection.updateOne({ _id: id }, { $set: newCourse })        
@@ -632,8 +642,6 @@ export const deleteCourses = async (id: string) => {
 
     const uri = MD_URI;
     const connection = await connectDB(dbName, "courses")
-
-    console.log(id);
     
     const deleted = await connection.deleteOne({ _id: id });
     
@@ -683,8 +691,6 @@ export const deleteStudent = async (id: string) => {
 
     const uri = MD_URI;
     const connection = await connectDB(dbName, "courses")
-
-    console.log(id);
     
     const deleted = await connection.deleteOne({ _id: id });
     
@@ -743,8 +749,6 @@ export const deleteMisCursos = async (id: string) => {
 
     const uri = MD_URI;
     const connection = await connectDB(dbName, "courses")
-
-    console.log(id);
     
     const deleted = await connection.deleteOne({ _id: id });
     
@@ -795,8 +799,6 @@ export const deleteMyStudents = async (id: string) => {
 
     const uri = MD_URI;
     const connection = await connectDB(dbName, "courses")
-
-    console.log(id);
     
     const deleted = await connection.deleteOne({ _id: id });
     
@@ -855,8 +857,6 @@ export const deleteFacilitadores = async (id: string) => {
 
     const uri = MD_URI;
     const connection = await connectDB(dbName, adminsCollectionName)
-
-    console.log(id);
     
     const deleted = await connection.deleteOne({ _id: id });
     
