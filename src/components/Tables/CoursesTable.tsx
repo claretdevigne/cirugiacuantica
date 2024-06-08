@@ -135,23 +135,42 @@ const CoursesTable = () => {
     )
   }
 
-  const buttonRender = (estatus: string) => {
+  const getImage = (curso_id: string) => {
+
+
+    const url = courses.filter((curso: any) => curso._id === curso_id)[0].img
+    
+    console.log(url);
+    
+
+    if (url) { return url } else { return "" }
+  }
+
+  const buttonRender = (estatus: string, curso_id: string, studentCourses: any, listaCursos: any) => {
+
+    const req_id = courses.filter((course: any) => course._id === curso_id)[0].requisitos
+    let enable = null
+
+    if (studentCourses[req_id]) {
+      enable = studentCourses[req_id].estatus === "certificado"
+    } else {
+      enable = false
+    }
 
     // TODO: REQUERIMIENTOS
     if (!user.courses) {
       return <DisabledButton />
-    } else if (estatus === "activo"){
+    } else if (estatus === 'active') {
       return <SuccessButton />
     } else if (estatus === "certificado") {
       return <DoneButton />
-    } 
-    // else if (user.courses_completed.includes(course.requirements)) {
-    //   return <EnabledButton id={course._id} />
-    // } else if (!course.requirements.length) {
-    //   return <EnabledButton id={course._id} />
-    // } else {
-    //   return <DisabledButton />
-    // }
+    } else if (enable) {
+      return <EnabledButton id={curso_id} />
+    } else if (req_id && req_id.length === 0) {
+      return <EnabledButton id={curso_id} />
+    } else {
+      return <DisabledButton />
+    }
   }
 
 
@@ -187,7 +206,7 @@ const CoursesTable = () => {
           :
           
           <tbody>
-            {Object.entries(user.courses).map(([curso, value], key: number) => (
+            {Object.keys(user.courses).map((curso: string, key: number) => (
                 <tr
                 className={`grid grid-cols-5 p-4 ${
                   key === courses.length - 1
@@ -198,14 +217,14 @@ const CoursesTable = () => {
               >
                   
                     <td className="col-span-1">
-                      {/* <Image src={} alt="Poster" width={100} height={48} /> */}
+                      <Image src={getImage(curso)} alt="Poster" width={100} height={48} />
                     </td>
                       <td className="col-span-3 my-auto">
                         {curso[0].toUpperCase() + curso.split("_").join(" ").slice(1)}
                       </td>
                     <td className="col-span-1 my-auto">
                       {
-                        buttonRender(value.estatus)
+                        buttonRender(user.courses[curso].estatus, curso, user.courses, courses)
                       }
                     </td>
                   
