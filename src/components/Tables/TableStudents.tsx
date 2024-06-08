@@ -43,14 +43,15 @@ const TableStudents: React.FC = () => {
   const { isLoading, data, refetch } = useQuery({ queryKey: ["requests"], queryFn: fetchingRequests })
   const { isLoading: loading, data: coursesFetch } = useQuery({ queryKey: ["courses"], queryFn: fetchingCourses })
 
-  const getName = (id: string) => {
-    
+  const getNameOfActiveCourse = (listaCursos: any) => {
+
     if (!loading && coursesFetch.length) {
-      const course = coursesFetch.filter((course: any) => course._id === id[0])
-  
-      return course[0].name
+
+      const cursoActivo = Object.keys(listaCursos).filter((curso: any) => listaCursos[curso].estatus === 'activo');
+      
+      return cursoActivo[0][0].toUpperCase() + cursoActivo[0].split("_").join(" ").slice(1)
     }
-  
+
     return
   }
 
@@ -58,13 +59,15 @@ const TableStudents: React.FC = () => {
     let counter = 0
     if (!isLoading) {
       data.map((course: any) => {
-        if (course.current_courses.length) {
+        if (true) {
+        // if (course.current_courses.length) {
           counter++
         }
       })
       setRequests(counter)
     }
-    
+
+
   }, [isLoading, data])
 
   return (
@@ -117,47 +120,40 @@ const TableStudents: React.FC = () => {
             <div className="my-3 text-center">NO HAY ESTUDIANTES ACTIVOS</div>
 
             :
-          
-          data.map((user: any, key: number) => (
 
-            !user.current_courses.length
+            data.map((user: any, key: number) => {
+              // Verificar si algún curso tiene un estado activo
+              const cursoActivo = Object.values(user.cursos).some((curso: any) => curso.estatus === "activo");
 
-            ?
+              // Renderizar solo si hay algún curso activo
+              if (cursoActivo) {
+                return (
+                  <div
+                    className={`grid grid-cols-3 ${
+                      key === data.length - 1 ? "" : "border-b border-stroke dark:border-strokedark"
+                    }`}
+                    key={key}
+                  >
+                    <div className="flex items-center p-2.5 xl:p-5">
+                      <p className="font-medium text-black dark:text-white">{user.nombre}</p>
+                    </div>
 
-            ""
+                    <div className="flex items-center justify-center p-2.5 xl:p-5">
+                      <p className="font-medium text-meta-3">{getNameOfActiveCourse(user.cursos)}</p>
+                    </div>
 
-            :
+                    <div className="hidden items-center justify-center p-2.5 sm:flex xl:p-5">
+                      <button onClick={() => handleCertification(user)} className="bg-success text-white py-2 px-5 rounded-md">
+                        CERTIFICAR
+                      </button>
+                    </div>
+                  </div>
+                );
+              } else {
+                return null; // No hay cursos activos, no renderizar este usuario
+              }
+            })
 
-            <div
-              className={`grid grid-cols-3 ${
-                key === data.length - 1
-                  ? ""
-                  : "border-b border-stroke dark:border-strokedark"
-              }`}
-              key={key}
-            >
-
-              <div className="flex items-center p-2.5 xl:p-5">
-                <p className="font-medium text-black dark:text-white">
-                  {user.name}
-                </p>
-              </div>
-
-              <div className="flex items-center justify-center p-2.5 xl:p-5">
-                {
-                  // TODO: PUEDE QUE HAY MAS DE UNO A LA VEZ
-                }
-                <p className="font-medium text-meta-3">{
-                `${getName(user.current_courses)}`
-                }</p>
-              </div>
-
-              <div className="hidden items-center justify-center p-2.5 sm:flex xl:p-5">
-                <button onClick={ () => handleCertification(user) } className="bg-success text-white py-2 px-5 rounded-md">CERTIFICAR</button>
-              </div>
-            </div>
-          ))
-          
           }
         </div>
       </div>

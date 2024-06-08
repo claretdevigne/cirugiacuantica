@@ -25,24 +25,6 @@ const fetchCourses = async () => {
     })
 }}
 
-const urls: { id: string, url: string}[] = [
-  {
-    id: "6607c7271526ef2f90f3e1d7",
-    url: "https://www.paulaandreagil.com/resource_redirect/offers/4FVuqgL3"
-  },
-
-  {
-    id: "6609c609443cd0a54373017d",
-    url: "https://www.paulaandreagil.com/resource_redirect/offers/o4qF9iCm"
-  }
-]
-
-const getUrl = (id: string) => {
-  const itemList = urls.filter(item => item.id === id)
-  const item = itemList[0]
-  return item.url
-}
-
 const refetchData = (refetch: Function, email: string, setUser: Function, admin: boolean) => {
   refetch()
 
@@ -87,6 +69,12 @@ const CoursesTable = () => {
       return createRequest(token, courseId, userEmail)
     }
   }
+
+  const getUrl = (id: string) => {
+    const url = courses.filter((course: any) => course._id === id)[0].url
+    if (url) { return url }
+  }
+  
 
   const handleInsciption = (id: string) => {
     const url = getUrl(id)
@@ -160,7 +148,7 @@ const CoursesTable = () => {
     // TODO: REQUERIMIENTOS
     if (!user.courses) {
       return <DisabledButton />
-    } else if (estatus === 'active') {
+    } else if (estatus === 'activo') {
       return <SuccessButton />
     } else if (estatus === "certificado") {
       return <DoneButton />

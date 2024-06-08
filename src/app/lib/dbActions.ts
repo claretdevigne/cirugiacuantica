@@ -487,14 +487,12 @@ export const createRequest = async (token: string, courseId: string, userEmail: 
         const requestConnection = await connectDB(dbName, requestsCollectionName)
         const userConnection = await connectDB(dbName, usersCollectionName)
         const courseConnection = await connectDB(dbName, coursesCollectionName)
-        
-        const objectId = new ObjectId(String(courseId))
 
-        const courseObject = await courseConnection.findOne({ _id: objectId })
+        const courseObject = await courseConnection.findOne({ _id: courseId })
         const courseName = await courseObject.name
 
         const userObject = await userConnection.findOne({ email: userEmail })
-        const userName = await userObject.name
+        const userName = await userObject.nombre
         
         const request = {
             userName: userName,
@@ -553,20 +551,14 @@ export const updateRequests = async (token: string, request: any) => {
         const requests = await connection.deleteOne({ _id: objectID })
         
         //TODO: Agregar el email. Peligro de repetir nombres
-        const user = await usersConnection.findOne({ name: request.userName })
+        const user = await usersConnection.findOne({ nombre: request.userName })
 
         const course = await courseConnection.findOne({ name: request.courseName })
 
-        const current_courses = [
-            ...user.current_courses,
-            course._id
-        ]
+        const curso_id = request.courseName.split(' ').join("_").toLowerCase()
 
-        const userUpdated = await usersConnection.updateOne({ name: request.userName }, {
-            $set: {
-                current_courses: current_courses
-            }
-        } )
+        const userUpdated = await usersConnection.updateOne({ nombre: request.userName, [`cursos.${curso_id}`]: { $exists: true } },
+            { $set: { [`cursos.${curso_id}.estatus`]: "activo" } } )
         
         if (requests) {
             return {
