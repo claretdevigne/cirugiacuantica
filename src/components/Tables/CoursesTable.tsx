@@ -125,40 +125,64 @@ const CoursesTable = () => {
 
   const getImage = (curso_id: string) => {
 
-
     const url = courses.filter((curso: any) => curso._id === curso_id)[0].img
-    
-    console.log(url);
-    
 
     if (url) { return url } else { return "" }
   }
 
   const buttonRender = (estatus: string, curso_id: string, studentCourses: any, listaCursos: any) => {
 
-    const req_id = courses.filter((course: any) => course._id === curso_id)[0].requisitos
-    let enable = null
+    // Obtener requisitos del curso
+  const req_id = listaCursos.filter((curso: any) => curso._id === curso_id)[0]?.requisitos;
 
-    if (studentCourses[req_id]) {
-      enable = studentCourses[req_id].estatus === "certificado"
-    } else {
-      enable = false
-    }
+  // Verificar si el usuario tiene cursos
+  if (!studentCourses || Object.keys(studentCourses).length === 0) {
+    return <DisabledButton />;
+  }
 
-    // TODO: REQUERIMIENTOS
-    if (!user.courses) {
-      return <DisabledButton />
-    } else if (estatus === 'activo') {
-      return <SuccessButton />
-    } else if (estatus === "certificado") {
-      return <DoneButton />
-    } else if (enable) {
-      return <EnabledButton id={curso_id} />
-    } else if (req_id && req_id.length === 0) {
-      return <EnabledButton id={curso_id} />
+  // Verificar el estado del curso
+  if (estatus === 'activo') {
+    return <SuccessButton />;
+  } else if (estatus === 'certificado') {
+    return <DoneButton />;
+  }
+
+  // Verificar si se cumplen los requisitos necesarios
+  if (req_id && req_id.length > 0) {
+    const requisitoCumplido = studentCourses[req_id[0]] && studentCourses[req_id[0]].estatus === 'certificado';
+    if (requisitoCumplido) {
+      return <EnabledButton id={curso_id} />;
     } else {
-      return <DisabledButton />
+      return <DisabledButton />;
     }
+  }
+
+  // Si no hay requisitos o el curso no tiene requisitos
+  return <EnabledButton id={curso_id} />;
+
+    // const req_id = courses.filter((course: any) => course._id === curso_id)[0].requisitos
+    // let enable = null
+
+    // if (studentCourses[req_id]) {
+    //   enable = studentCourses[req_id[0]].estatus === "certificado"
+    // } else {
+    //   enable = false
+    // }
+
+    // // TODO: REQUERIMIENTOS
+    // if (!user.courses) {
+    //   return <DisabledButton />
+    // } else if (estatus === 'activo') {
+    //   return <SuccessButton />
+    // } else if (estatus === "certificado") {
+    //   return <DoneButton />
+    // } else if (enable) {
+    //   return <EnabledButton id={curso_id} />
+    // } else if (req_id && req_id.length === 0) {
+    //   return <EnabledButton id={curso_id} />
+    // } else {
+    //   return <DisabledButton />
+    // }
   }
 
 

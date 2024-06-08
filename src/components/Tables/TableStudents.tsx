@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getAllCourses, getAllUsers, getRequests, updateRequests, updateUser } from "@/app/lib/dbActions";
 import { useEffect, useState } from "react";
 import { count } from "console";
+import { AnyMxRecord } from "dns";
 
 const TableStudents: React.FC = () => {
 
@@ -32,10 +33,10 @@ const TableStudents: React.FC = () => {
     }
   }
 
-  const handleCertification = (user: any) => {
+  const handleCertification = (user_id: string, course_id: any) => {
     const token = localStorage.getItem("authToken")
     if (token) {
-      updateUser(token, user)
+      updateUser(token, user_id, course_id)
       refetch()
     }
   }
@@ -50,6 +51,18 @@ const TableStudents: React.FC = () => {
       const cursoActivo = Object.keys(listaCursos).filter((curso: any) => listaCursos[curso].estatus === 'activo');
       
       return cursoActivo[0][0].toUpperCase() + cursoActivo[0].split("_").join(" ").slice(1)
+    }
+
+    return
+  }
+
+  const getIdOfActiveCourse = (listaCursos: any) => {
+
+    if (!loading && coursesFetch.length) {
+
+      const cursoActivo = Object.keys(listaCursos).filter((curso: any) => listaCursos[curso].estatus === 'activo');
+      
+      return cursoActivo[0]
     }
 
     return
@@ -143,7 +156,7 @@ const TableStudents: React.FC = () => {
                     </div>
 
                     <div className="hidden items-center justify-center p-2.5 sm:flex xl:p-5">
-                      <button onClick={() => handleCertification(user)} className="bg-success text-white py-2 px-5 rounded-md">
+                      <button onClick={() => handleCertification(user._id, getIdOfActiveCourse(user.cursos))} className="bg-success text-white py-2 px-5 rounded-md">
                         CERTIFICAR
                       </button>
                     </div>

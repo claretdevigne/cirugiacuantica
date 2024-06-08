@@ -571,25 +571,18 @@ export const updateRequests = async (token: string, request: any) => {
     }
 }}
 
-export const updateUser = async (token: string, user: any) => {
+export const updateUser = async (token: string, user_id: string, course_id: string) => {
 
     const validation = await validateToken(token)
 
     if (validation?.status === 200) {
 
         const connection = await connectDB(dbName, usersCollectionName)
-        
-        const id = new ObjectId(String(user._id))
 
-        const added = await connection.updateOne({ _id: id }, { $set: {
-            courses_completed: [
-                ...user.courses_completed,
-                ...user.current_courses
-            ],
-            current_courses: []
-        } })        
+        const userUpdated = await connection.updateOne({ _id: user_id, [`cursos.${course_id}`]: { $exists: true } },
+            { $set: { [`cursos.${course_id}.estatus`]: "certificado" } } )
 
-        if (added) {
+        if (userUpdated) {
             return {
                 status: 201
             }
