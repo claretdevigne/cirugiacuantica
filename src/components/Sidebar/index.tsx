@@ -262,7 +262,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 {/* <!-- Menu Item Database --> */}
 
               {
-                user.admin
+                user !== null && user !== undefined && user.admin 
 
                 ?
 

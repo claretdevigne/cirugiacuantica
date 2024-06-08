@@ -218,7 +218,9 @@ const CoursesTable = () => {
           :
           
           <tbody>
-            {Object.keys(user.courses).map((curso: string, key: number) => (
+            {
+              user !== null ?
+            Object.keys(user.courses).map((curso: string, key: number) => (
                 <tr
                 className={`grid grid-cols-5 p-4 ${
                   key === courses.length - 1
@@ -241,7 +243,12 @@ const CoursesTable = () => {
                     </td>
                   
                 </tr>
-            ))}  
+            ))
+          
+            :
+
+            ""
+          }  
           </tbody>
 
         }
