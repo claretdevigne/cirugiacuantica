@@ -21,7 +21,9 @@ const Breadcrumb = ({ pageName, types }: BreadcrumbProps) => {
                   ? "Cursos /"
                     : types === "database"
                       ? "Base de datos /"
-                        : "Dashboard /"
+                        : types === "perfil"
+                          ?  "Configuración /"
+                            : "Dashboard /"
               }
             </Link>
           </li>

@@ -864,3 +864,16 @@ export const updateFacilitadores = async (id: string, name: string, email: strin
                     cursos: courses, 
                 } })
 }
+
+
+export const getUserProfile = async (email: string, admin: boolean) => {
+    const uri = MD_URI;
+    let collectionName = ""
+    if (admin) { collectionName = adminsCollectionName } else { collectionName = usersCollectionName }
+    
+    const connection = await connectDB(dbName, collectionName)
+    const profile = await connection.find({ email: email }).toArray();
+    const data = JSON.stringify(profile)
+    return data
+        
+}

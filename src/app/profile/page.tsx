@@ -10,7 +10,7 @@ export default function Home() {
     <>
       <DefaultLayout>
         <Breadcrumb pageName="Perfil" types="perfil" />
-        {/* <ProfileTable/> */}
+        <ProfileTable/>
       </DefaultLayout>
     </>
   );
