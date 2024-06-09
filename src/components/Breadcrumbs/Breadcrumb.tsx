@@ -19,7 +19,11 @@ const Breadcrumb = ({ pageName, types }: BreadcrumbProps) => {
               {
                 types === "cursos"
                   ? "Cursos /"
-                  : "Dashboard /"
+                    : types === "database"
+                      ? "Base de datos /"
+                        : types === "perfil"
+                          ?  "Configuración /"
+                            : "Dashboard /"
               }
             </Link>
           </li>

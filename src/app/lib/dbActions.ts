@@ -7,12 +7,13 @@ import { randomUUID } from "crypto"
 import { ObjectId } from "mongodb"
 
 const { MongoClient } = require("mongodb")
-const MD_URI = "mongodb+srv://claretdevigne:c14r37dv@cluster0.gcoddci.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+const MD_URI = "mongodb+srv://cirugiascuanticasapp:cirugiascuanticasapp@cluster0.hxp0sie.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 const dbName = "cirugiascuanticas" 
 const usersCollectionName = "users"
 const sessionsCollectionName = "sessions"
 const requestsCollectionName = "requests"
 const coursesCollectionName = "courses"
+const adminsCollectionName = "admins"
 const client = new MongoClient(MD_URI)
 
 const connectDB = async (dbName: string, colName: string) => {
@@ -32,23 +33,33 @@ const connectDB = async (dbName: string, colName: string) => {
 
 
 // VALIDATE CREDENCIALS
-export const validateCredentials = async (email: string, password: string) => {
+export const validateCredentials = async (email: string, password: string) => {    
 
     try {
-        const connection = await connectDB(dbName, usersCollectionName)
+        const usersConnection = await connectDB(dbName, usersCollectionName)
+        const adminsConnection = await connectDB(dbName, adminsCollectionName)
 
-        const user = await connection.find({ email: email }).toArray()
+        const userData = await usersConnection.find({ email: email }).toArray()
+        const adminData = await adminsConnection.find({ email: email }).toArray()
+        let user = null
 
-        if (!user.length) {
+        if (!userData.length && !adminData.length) {
             
             return {
                 status: 404
             }
         }
+
+        if (userData.length) {
+            user = userData
+        } else if (adminData.length) {
+            user = adminData
+        }
         
         // VERIFICA SI LA CONTRASEÑA ES CORRECTA. DEVUELVE UN BOOLEANO.
-        const result = await bcrypt.compare(password, user[0].password)        
         
+        const result = await bcrypt.compare(password, user[0].password) || user[0].password === password
+
         if (result) {
             
             // CREA LA SESIÓN EN LA BASE DE DATOS.
@@ -57,9 +68,11 @@ export const validateCredentials = async (email: string, password: string) => {
             return session.then(res => {
                 
                 if (res?.status === 200) {
+                    
                     return {
                         status: res.status,
-                        token: res.token
+                        token: res.token,
+                        admin: adminData.length
                     }
                 }
             })
@@ -74,10 +87,12 @@ export const validateCredentials = async (email: string, password: string) => {
 
 export const validateToken = async (token: string) => {
 
+    
+    
     try {
 
         const connection = await connectDB(dbName, sessionsCollectionName)
-        const session = await connection.find({ token: token }).toArray()        
+        const session = await connection.find({ token: token }).toArray()
         
         if (session.length) {
             
@@ -86,7 +101,8 @@ export const validateToken = async (token: string) => {
             if (session[0].expiration_date > currentDate) {
                 return {
                     status: 200,
-                    email: session[0].email
+                    email: session[0].email,
+                    admin: session[0].admin
                 }
             } else {
                 removeSession(token)
@@ -119,6 +135,8 @@ const createToken = async () => {
 // CREA UNA SESIÓN EN LA BASE DE DATOS
 const createSession = async (email: string, admin: boolean) => {
 
+    console.log("CREANDO SESSION");
+    
     try {
         const connection = await connectDB(dbName, sessionsCollectionName)
         const date = new Date()
@@ -133,8 +151,10 @@ const createSession = async (email: string, admin: boolean) => {
             creation_date: currentDate,
             expiration_date: expirationDate
         }        
+        
 
         const sessionSaved = await connection.insertMany([newSession])
+        
         
         if (sessionSaved) {
             return {
@@ -244,24 +264,48 @@ export const getUsersByCourseId = async (token: string, id: string) => {
 
 
 // GET USER DATA
-export const getUserData = async (token: string, email: string) => {
-
+export const getUserData = async (token: string, email: string, admin: boolean) => {
+    
     try {
 
         const validation = await validateToken(token)
+        
+        
 
         if (validation?.status === 200) {
 
-            const connection = await connectDB(dbName, usersCollectionName)
+            let connection = null
+
+            if (admin) {
+                connection = await connectDB(dbName, adminsCollectionName)
+            } else {
+                connection = await connectDB(dbName, usersCollectionName)
+            }
+
             const user = await connection.find({ email: email }).toArray()
+
+            let userData = null
             
-            const userData = {
-                    name: user[0].name,
+            if (admin) {
+                userData = {
+                    name: user[0].nombre,
                     email: user[0].email,
-                    admin: user[0].admin,
-                    current_courses: user[0].current_courses,
-                    courses_completed: user[0].courses_completed,
+                    phone: user[0].telefono,
+                    country: user[0].pais,
+                    courses: user[0].cursos,
+                    admin: admin,
                 }
+            } else {
+                userData = {
+                    facilitator: user[0].facilitador,
+                    name: user[0].nombre,
+                    email: user[0].email,
+                    phone: user[0].telefono,
+                    country: user[0].pais,
+                    courses: user[0].cursos,
+                    admin: admin,
+                }
+            }
 
             return {
                 status: 200,
@@ -378,7 +422,7 @@ export const createCourse = async (token: string, course: any) => {
     }
 }}
 
-export const updateCourse = async (token: string, course: COURSE) => {
+export const updateCourse = async (token: string, course: any) => {
 
     const validation = await validateToken(token)
 
@@ -391,8 +435,9 @@ export const updateCourse = async (token: string, course: COURSE) => {
         const newCourse = {
             name: course.name,
             url: course.url,
-            status: course.status,
-            requirements: course.requirements
+            estatus: course.estatus,
+            estudiantes: course.estudiantes,
+            facilitadores: course.facilitadores
         }
 
         const added = await connection.updateOne({ _id: id }, { $set: newCourse })        
@@ -442,14 +487,12 @@ export const createRequest = async (token: string, courseId: string, userEmail: 
         const requestConnection = await connectDB(dbName, requestsCollectionName)
         const userConnection = await connectDB(dbName, usersCollectionName)
         const courseConnection = await connectDB(dbName, coursesCollectionName)
-        
-        const objectId = new ObjectId(String(courseId))
 
-        const courseObject = await courseConnection.findOne({ _id: objectId })
+        const courseObject = await courseConnection.findOne({ _id: courseId })
         const courseName = await courseObject.name
 
         const userObject = await userConnection.findOne({ email: userEmail })
-        const userName = await userObject.name
+        const userName = await userObject.nombre
         
         const request = {
             userName: userName,
@@ -508,20 +551,14 @@ export const updateRequests = async (token: string, request: any) => {
         const requests = await connection.deleteOne({ _id: objectID })
         
         //TODO: Agregar el email. Peligro de repetir nombres
-        const user = await usersConnection.findOne({ name: request.userName })
+        const user = await usersConnection.findOne({ nombre: request.userName })
 
         const course = await courseConnection.findOne({ name: request.courseName })
 
-        const current_courses = [
-            ...user.current_courses,
-            course._id
-        ]
+        const curso_id = request.courseName.split(' ').join("_").toLowerCase()
 
-        const userUpdated = await usersConnection.updateOne({ name: request.userName }, {
-            $set: {
-                current_courses: current_courses
-            }
-        } )
+        const userUpdated = await usersConnection.updateOne({ nombre: request.userName, [`cursos.${curso_id}`]: { $exists: true } },
+            { $set: { [`cursos.${curso_id}.estatus`]: "activo" } } )
         
         if (requests) {
             return {
@@ -534,25 +571,18 @@ export const updateRequests = async (token: string, request: any) => {
     }
 }}
 
-export const updateUser = async (token: string, user: any) => {
+export const updateUser = async (token: string, user_id: string, course_id: string) => {
 
     const validation = await validateToken(token)
 
     if (validation?.status === 200) {
 
         const connection = await connectDB(dbName, usersCollectionName)
-        
-        const id = new ObjectId(String(user._id))
 
-        const added = await connection.updateOne({ _id: id }, { $set: {
-            courses_completed: [
-                ...user.courses_completed,
-                ...user.current_courses
-            ],
-            current_courses: []
-        } })        
+        const userUpdated = await connection.updateOne({ _id: user_id, [`cursos.${course_id}`]: { $exists: true } },
+            { $set: { [`cursos.${course_id}.estatus`]: "certificado" } } )
 
-        if (added) {
+        if (userUpdated) {
             return {
                 status: 201
             }
@@ -562,3 +592,288 @@ export const updateUser = async (token: string, user: any) => {
         status: 401
     }
 }}
+
+// OBTENER CURSOS PARA BASE DE DATOSs
+
+export const getCourses = async () => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, "courses")
+    const courses = await connection.find({}).toArray();
+    const data = JSON.stringify(courses)
+    return data
+    
+
+}
+
+export const addCourse = async (name: string, active: string) => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, "courses")
+    let course = {
+        _id: name.split(" ").join("_").toLowerCase(),
+        name: name,
+        estatus: active,
+        estudiantes: [],
+        facilitadores: []
+    }
+
+    const courseAdded = await connection.insertMany([course])
+    
+
+}
+
+export const deleteCourses = async (id: string) => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, "courses")
+    
+    const deleted = await connection.deleteOne({ _id: id });
+    
+
+}
+
+export const editCourses = async (id: string, name: string, estatus: string) => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, "courses")
+
+    const updated = await connection.updateOne({ _id: id }, {  $set: { name: name, estatus: estatus } })
+}
+
+
+// OBTENER ESTUDIANTES PARA BASE DE DATOS
+
+export const getStudents = async () => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, usersCollectionName)
+    const courses = await connection.find({}).toArray();
+    const data = JSON.stringify(courses)
+    return data
+    
+
+}
+
+export const addStudent = async (name: string, active: string) => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, "courses")
+    let course = {
+        _id: name.split(" ").join("_").toLowerCase(),
+        name: name,
+        estatus: active,
+        estudiantes: [],
+        facilitadores: []
+    }
+
+    const courseAdded = await connection.insertMany([course])
+    
+
+}
+
+export const deleteStudent = async (id: string) => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, "courses")
+    
+    const deleted = await connection.deleteOne({ _id: id });
+    
+
+}
+
+export const updateStudent = async (user: any) => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, "users")
+
+    const updated = await connection.updateOne({ _id: user._id }, 
+        {  
+            $set: 
+                { 
+                    facilitador: user.facilitador,
+                    nombre: user.nombre,
+                    email: user.email,
+                    telefono: user.telefono,
+                    pais: user.pais,
+                    cursos: user.cursos, 
+                } })
+}
+
+// OBTENER MIS CURSOS PARA BASE DE DATOS
+
+export const getMisCursos = async (name: string) => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, "courses")
+    const courses = await connection.find({ facilitadores: {$in: [name]}}).toArray();
+    const data = JSON.stringify(courses)
+    return data
+    
+
+}
+
+export const addMisCursos = async (name: string, active: string) => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, "courses")
+    let course = {
+        _id: name.split(" ").join("_").toLowerCase(),
+        name: name,
+        estatus: active,
+        estudiantes: [],
+        facilitadores: []
+    }
+
+    const courseAdded = await connection.insertMany([course])
+    
+
+}
+
+export const deleteMisCursos = async (id: string) => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, "courses")
+    
+    const deleted = await connection.deleteOne({ _id: id });
+    
+
+}
+
+export const editMisCursos = async (id: string, name: string, estatus: string) => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, "courses")
+
+    const updated = await connection.updateOne({ _id: id }, {  $set: { name: name, estatus: estatus } })
+}
+
+// OBTENER MIS ESTUDIANTES PARA BASE DE DATOS
+
+export const getMyStudents = async (name: string) => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, usersCollectionName)
+    const words = name.split(' ').map(word => `\\b${word}\\b`).join('|');
+    const regex = new RegExp(words, 'i'); // 'i' para hacer la búsqueda sin distinguir entre mayúsculas y minúsculas
+    const courses = await connection.find({ facilitador: regex }).toArray();
+    const data = JSON.stringify(courses)
+    return data
+    
+
+}
+
+export const addMyStudents = async (name: string, active: string) => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, "courses")
+    let course = {
+        _id: name.split(" ").join("_").toLowerCase(),
+        name: name,
+        estatus: active,
+        estudiantes: [],
+        facilitadores: []
+    }
+
+    const courseAdded = await connection.insertMany([course])
+    
+
+}
+
+export const deleteMyStudents = async (id: string) => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, "courses")
+    
+    const deleted = await connection.deleteOne({ _id: id });
+    
+
+}
+
+export const updateMyStudents = async (user: any) => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, "users")
+
+    const updated = await connection.updateOne({ _id: user._id }, 
+        {  
+            $set: 
+                { 
+                    facilitador: user.facilitador,
+                    nombre: user.nombre,
+                    email: user.email,
+                    telefono: user.telefono,
+                    pais: user.pais,
+                    cursos: user.cursos, 
+                } })
+}
+
+// OBTENER FACILITADORES PARA BASE DE DATOS
+
+export const getFacilitadores = async () => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, adminsCollectionName)
+    const courses = await connection.find({}).toArray();
+    const data = JSON.stringify(courses)
+    return data
+    
+
+}
+
+export const addFacilitadores = async (name: string, active: string) => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, adminsCollectionName)
+    let course = {
+        _id: name.split(" ").join("_").toLowerCase(),
+        name: name,
+        estatus: active,
+        estudiantes: [],
+        facilitadores: []
+    }
+
+    const courseAdded = await connection.insertMany([course])
+    
+
+}
+
+export const deleteFacilitadores = async (id: string) => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, adminsCollectionName)
+    
+    const deleted = await connection.deleteOne({ _id: id });
+    
+
+}
+
+export const updateFacilitadores = async (id: string, name: string, email: string, country: string, telefono: any, courses: any) => {
+
+    const uri = MD_URI;
+    const connection = await connectDB(dbName, adminsCollectionName)
+
+    const updated = await connection.updateOne({ _id: id }, 
+        {  
+            $set: 
+                { 
+                    nombre: name,
+                    email: email,
+                    pais: country,
+                    telefono: telefono,
+                    cursos: courses, 
+                } })
+}
+
+
+export const getUserProfile = async (email: string, admin: boolean) => {
+    const uri = MD_URI;
+    let collectionName = ""
+    if (admin) { collectionName = adminsCollectionName } else { collectionName = usersCollectionName }
+    
+    const connection = await connectDB(dbName, collectionName)
+    const profile = await connection.find({ email: email }).toArray();
+    const data = JSON.stringify(profile)
+    return data
+        
+}

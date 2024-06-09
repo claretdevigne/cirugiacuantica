@@ -29,8 +29,10 @@ export const useManageCoursesStore = create(set => ({
 export const userStore = create(set => ({
   email: null,
   user: null,
+  admin: null,
   setEmail: (payload) => set(() => ({ email: payload })),
-  setUser: (payload) => set(() => ({ user: payload }))
+  setUser: (payload) => set(() => ({ user: payload })),
+  setAdmin: (payload) => set(() => ({ admin: payload }))
 }))
 
 export const loadingStore = create(set => ({

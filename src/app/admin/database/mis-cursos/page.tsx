@@ -1,17 +1,14 @@
 'use client'
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import CoursesTable from "@/components/Tables/CoursesTable";
+import TableMisCursos from "@/components/Tables/TableMisCursos";
 
-export default function Home() {
-
+export default function Page() {
 
   return (
-    <>
       <DefaultLayout>
-        <Breadcrumb pageName="Cursos" types="cursos" />
-        <CoursesTable/>
+        <Breadcrumb pageName="Mis cursos" types="database"/>
+        <TableMisCursos />
       </DefaultLayout>
-    </>
   );
 }

@@ -67,7 +67,7 @@ const DropdownUser = () => {
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
             {
-              user.name
+              user !== null && user !== undefined ? user.name : ""
             }
           </span>
         </span>
@@ -115,7 +115,7 @@ const DropdownUser = () => {
           <li>
             <Link onClick={() => console.log(user)
             }
-              href="#"
+              href="profile"
               className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
             >
               <svg
@@ -138,7 +138,7 @@ const DropdownUser = () => {
               Mi perfil
             </Link>
           </li>
-          <li>
+          {/* <li>
             <Link
               // href="/settings"
               href="#"
@@ -163,7 +163,7 @@ const DropdownUser = () => {
               </svg>
               Configuración de cuenta
             </Link>
-          </li>
+          </li> */}
         </ul>
         <button onClick={handleSignOut} className="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base">
           <svg
