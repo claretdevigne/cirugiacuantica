@@ -422,7 +422,7 @@ export const createCourse = async (token: string, course: any) => {
     }
 }}
 
-export const updateCourse = async (token: string, course: COURSE) => {
+export const updateCourse = async (token: string, course: any) => {
 
     const validation = await validateToken(token)
 
