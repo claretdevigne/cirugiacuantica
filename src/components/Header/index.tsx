@@ -117,6 +117,8 @@ const Header = (props: {
             {/* <!-- Chat Notification Area --> */}
           </ul>
 
+          <Link className="font-bold" href="https://cirugiascuanticas.com">Cirugías Cuánticas</Link>
+
           {/* <!-- User Area --> */}
           <DropdownUser />
           {/* <!-- User Area --> */}
