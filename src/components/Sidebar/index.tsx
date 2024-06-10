@@ -201,7 +201,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           
                           {
 
-                            isLoading
+                            isLoading || !user
 
                             ?
 
@@ -230,7 +230,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                   pathname === "/" && "text-white"
                                 }`}
                               >
-                                Estudiantes Activos
+                                Participantes Activos
                               </Link>
                             </li>
                             </>
