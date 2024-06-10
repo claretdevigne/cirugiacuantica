@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { signup } from "@/app/lib/singup";
+import { countries } from "countries-list";
 
 const handleSignup = (e: any, setStatus: Function, setValidate: Function) => {
   setValidate("")
@@ -10,10 +11,12 @@ const handleSignup = (e: any, setStatus: Function, setValidate: Function) => {
   e.preventDefault()
   const name = e.target.name.value
   const email = e.target.email.value
+  const phone = e.target.phone.value
+  const country = e.target.country.value
   const password = e.target.password.value
   const repassword = e.target.repassword.value
 
-  if (!name.length || !email.length || !password.length || !repassword.length ) {
+if (!name.length || !email.length || !password.length || !repassword.length || !phone.length || !country.length ) {
     setValidate("missingField")
     return
   }
@@ -29,7 +32,7 @@ const handleSignup = (e: any, setStatus: Function, setValidate: Function) => {
   }
 
   setValidate("")  
-  signup(name, email, password, repassword)
+  signup(name, email, phone, country, password, repassword)
     .then((res: any) => setStatus(res))
 }
 
@@ -61,6 +64,7 @@ const SignUp: React.FC = () => {
                 Regístrate
               </h2>
 
+              {/* NOMBRE */}
               <form onSubmit={(e) => handleSignup(e, setStatus, setValidatedData)}>
                 <div className="mb-4">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
@@ -99,6 +103,7 @@ const SignUp: React.FC = () => {
                   </div>
                 </div>
 
+                {/* EMAIL */}
                 <div className="mb-4">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
                     Email
@@ -132,6 +137,73 @@ const SignUp: React.FC = () => {
                   </div>
                 </div>
 
+                {/* TELEFONO */}
+                <div className="mb-4">
+                  <label className="mb-2.5 block font-medium text-black dark:text-white">
+                    Teléfono
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="tel"
+                      name="phone"
+                      placeholder="Ingresa tu teléfono"
+                      className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      required
+                    />
+
+                    <span className="absolute right-4 top-4">
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        height="24px" 
+                        viewBox="0 -960 960 960" 
+                        width="24px" 
+                        fill="#B1B9C5">
+                          <path 
+                            d="M798-120q-125 0-247-54.5T329-329Q229-429 174.5-551T120-798q0-18 12-30t30-12h162q14 0 25 9.5t13 22.5l26 140q2 16-1 27t-11 19l-97 98q20 37 47.5 71.5T387-386q31 31 65 57.5t72 48.5l94-94q9-9 23.5-13.5T670-390l138 28q14 4 23 14.5t9 23.5v162q0 18-12 30t-30 12ZM241-600l66-66-17-94h-89q5 41 14 81t26 79Zm358 358q39 17 79.5 27t81.5 13v-88l-94-19-67 67ZM241-600Zm358 358Z"
+                          />
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+
+                {/* PAIS */}
+                <div className="mb-4">
+                  <label className="mb-2.5 block font-medium text-black dark:text-white">
+                    País
+                  </label>
+                  <div className="relative">
+                    <select
+                      name="country"
+                      className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                      required
+                    >
+                    <option value="" disabled selected>Selecciona tu país</option>
+                    {
+                      Object.values(countries).map((country: any) => {
+                        return (
+                          <option key={country.name} value={country.name}>{country.name}</option>
+                        )
+                      })
+                    }
+                    </select>
+
+                    <span className="absolute right-4 top-4">
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        height="24px" 
+                        viewBox="0 -960 960 960" 
+                        width="24px" 
+                        fill="#B1B9C5"
+                      >
+                        <path 
+                          d="M200-120v-680h360l16 80h224v400H520l-16-80H280v280h-80Zm300-440Zm86 160h134v-240H510l-16-80H280v240h290l16 80Z"
+                        />
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+
+                {/* CONTRASEÑA */}
                 <div className="mb-4">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
                     Contraseña
@@ -169,6 +241,7 @@ const SignUp: React.FC = () => {
                   </div>
                 </div>
 
+                {/* CONFIRMAR CONTRASEÑA */}
                 <div className="mb-6">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
                   Confirmar Contraseña
@@ -205,7 +278,7 @@ const SignUp: React.FC = () => {
                     </span>
                     {
                       validatedData === "missingField"
-                       ?  <p className="text-danger text-center mt-2">Por favor complete todos los campos</p>
+                        ?  <p className="text-danger text-center mt-2">Por favor complete todos los campos</p>
                         : validatedData === "tooShort"
                           ?  <p className="text-danger text-center mt-2">La contraseña debe tener al menos 8 caracteres</p>
                             : validatedData === "unmatchPasswords"
@@ -279,6 +352,12 @@ const SignUp: React.FC = () => {
                   </p>
                 </div>
               </form>
+              <button className="bg-green" onClick={() => {
+                  Object.values(countries).map((country:any) => {
+                    console.log(country.name);
+                  });
+                  
+                }}>HGOL</button>
             </div>
           </div>
         </div>

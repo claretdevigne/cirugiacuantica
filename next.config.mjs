@@ -4,7 +4,7 @@ const nextConfig = {
     images: {
         remotePatterns: [
             {
-                hostname: "cirugiascuanticas.com"
+                hostname: "cirugiascuanticas.com",
             }
         ]
     }

@@ -134,8 +134,6 @@ const createToken = async () => {
 
 // CREA UNA SESIÓN EN LA BASE DE DATOS
 const createSession = async (email: string, admin: boolean) => {
-
-    console.log("CREANDO SESSION");
     
     try {
         const connection = await connectDB(dbName, sessionsCollectionName)
