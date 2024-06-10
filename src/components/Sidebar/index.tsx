@@ -386,7 +386,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                   pathname === "/" && "text-white"
                                 }`}
                               >
-                                Mis estudiantes
+                                Practicantes certificados
                               </Link>
                             </li>
 
@@ -408,7 +408,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                   pathname === "/" && "text-white"
                                 }`}
                               >
-                                Lista de estudiantes
+                                Lista de praticantes
                               </Link>
                             </li>
 
