@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { signup } from "@/app/lib/singup";
+import { countries } from "countries-list";
 
 const handleSignup = (e: any, setStatus: Function, setValidate: Function) => {
   setValidate("")
@@ -171,13 +172,20 @@ const SignUp: React.FC = () => {
                     País
                   </label>
                   <div className="relative">
-                    <input
-                      type="text"
+                    <select
                       name="country"
-                      placeholder="Ingresa tu país"
                       className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       required
-                    />
+                    >
+                    <option value="" disabled selected>Selecciona tu país</option>
+                    {
+                      Object.values(countries).map((country: any) => {
+                        return (
+                          <option key={country.name} value={country.name}>{country.name}</option>
+                        )
+                      })
+                    }
+                    </select>
 
                     <span className="absolute right-4 top-4">
                       <svg 
@@ -270,7 +278,7 @@ const SignUp: React.FC = () => {
                     </span>
                     {
                       validatedData === "missingField"
-                       ?  <p className="text-danger text-center mt-2">Por favor complete todos los campos</p>
+                        ?  <p className="text-danger text-center mt-2">Por favor complete todos los campos</p>
                         : validatedData === "tooShort"
                           ?  <p className="text-danger text-center mt-2">La contraseña debe tener al menos 8 caracteres</p>
                             : validatedData === "unmatchPasswords"
@@ -344,6 +352,12 @@ const SignUp: React.FC = () => {
                   </p>
                 </div>
               </form>
+              <button className="bg-green" onClick={() => {
+                  Object.values(countries).map((country:any) => {
+                    console.log(country.name);
+                  });
+                  
+                }}>HGOL</button>
             </div>
           </div>
         </div>
