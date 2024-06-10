@@ -1,8 +1,11 @@
 export type USER = {
-  name: string,
+  _id: string;
+  nombre: string,
   email: string,
+  telefono: string,
+  pais: string,
+  cursos: any
   password: string,
   admin: boolean,
-  current_courses: Array<string>,
-  courses_completed: Array<string>
+  
 };
